@@ -15,6 +15,10 @@ qt_add_executable(cursova
     truthtablebuilder.h truthtablebuilder.cpp
     CustomLineEdit/customlineedit.h CustomLineEdit/customlineedit.cpp
     res.qrc
+    IniManager/inimanager.h IniManager/inimanager.cpp
+    IniManager/SettingsManager/settingsmanager.h IniManager/SettingsManager/settingsmanager.cpp
+    IniManager/HistoryManager/historymanager.h IniManager/HistoryManager/historymanager.cpp
+    form.ui
 
 )
 

@@ -4,5 +4,6 @@
     </qresource>
     <qresource prefix="/icons">
         <file>icons/icon.ico</file>
+        <file>icons/biconditional.png</file>
     </qresource>
 </RCC>

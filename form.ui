@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1029</width>
+    <height>648</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="biconditionalButton">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>30</y>
+     <width>581</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>80</width>
+     <height>24</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>800</width>
+     <height>888</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Open Sans SemiBold</family>
+     <pointsize>16</pointsize>
+     <bold>true</bold>
+     <underline>false</underline>
+     <strikeout>false</strikeout>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    align-items: center; /* Qt автоматически центрирует текст */
+    background-color: rgba(240, 240, 240, 0.26);
+    border: 1px solid #DFDFDF;
+    border-radius: 16px;
+    url(:/icons/icons/biconditional.png);
+	color: rgb(25, 25, 25);
+
+    /* justify-content: center; Qt автоматически центрирует текст */
+    line-height: 28px; /* Не имеет прямого аналога, влияет на вертикальное расположение текста */
+    padding: 14px 22px;
+    text-decoration: none; /* Не применяется к тексту кнопки */
+    /* transition: all .2s; Анимация не поддерживается напрямую в Style Sheets */
+    user-select: none; /* Qt по умолчанию запрещает выделение */
+}
+
+QPushButton:hover {
+    background-color: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.19);
+}
+
+QPushButton:pressed {
+    /* Стиль при нажатии */
+    background-color: lightgray;
+}
+
+@media screen and (min-width: 768px) {
+    QPushButton {
+        font-size: 20px;
+        min-width: 200px; /* Используйте setMinimumWidth в коде */
+        padding: 14px 16px;
+    }
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="biconditionalButton_2">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>130</y>
+     <width>191</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>80</width>
+     <height>24</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>800</width>
+     <height>777</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Open Sans SemiBold</family>
+     <pointsize>16</pointsize>
+     <bold>true</bold>
+     <underline>false</underline>
+     <strikeout>false</strikeout>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    align-items: center;
+    background-color: rgba(240, 240, 240, 0.26);
+    border: 1px solid #DFDFDF;
+    border-radius: 36px;
+    
+	color: rgb(25, 25, 25);
+
+    line-height: 28px;
+    padding: 14px 22px;
+    text-decoration: none; 
+    user-select: none;
+}
+
+QPushButton:hover {
+    background-color: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.19);
+}
+
+QPushButton:pressed {
+    background-color: lightgray;
+}
+
+@media screen and (min-width: 768px) {
+    QPushButton {
+        font-size: 20px;
+        min-width: 200px; 
+        padding: 14px 16px;
+    }
+}</string>
+   </property>
+   <property name="text">
+    <string>⇔</string>
+   </property>
+  </widget>
+  <widget class="CustomLineEdit" name="inputLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>110</y>
+     <width>521</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Open Sans SemiBold</family>
+     <pointsize>18</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit {
+    background-color: rgb(6,6,6); /* Темно-серый фон */
+    ; /* Светло-серый текст */
+	color: rgb(26, 26, 26);
+    border: none; /* Убираем рамку */
+    border-radius: 50px; /* Скругленные углы */
+    padding: 8px; /* Внутренние отступы */
+}
+
+QLineEdit:focus {
+    /* Можно добавить стиль при фокусе, например, подсветку */
+    /* border: 1px solid #7289DA; */
+}</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+   </property>
+   <property name="placeholderText">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>420</y>
+     <width>307</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QFrame {
+    background-color: rgb(211,211,211); /* Темно-серый фон */
+    ; /* Светло-серый текст */
+	color: rgb(26, 26, 26);
+    border: none; /* Убираем рамку */
+    border-radius: 30px; /* Скругленные углы */
+    padding: 8px; /* Внутренние отступы */
+}
+QLineEdit {
+    background-color: rgb(211,211,211); /* Темно-серый фон */
+
+	color: rgb(26, 26, 26);
+    border: none; /* Убираем рамку */
+
+    padding: 8px; /* Внутренние отступы */
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>5</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="CustomLineEdit" name="inputLineEdit_2">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>60</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Open Sans SemiBold</family>
+        <pointsize>18</pointsize>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frame_2">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>420</y>
+     <width>259</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QFrame {
+    background-color: rgb(211,211,211); /* Темно-серый фон */
+    ; /* Светло-серый текст */
+	color: rgb(26, 26, 26);
+    border: none; /* Убираем рамку */
+    border-radius: 23px; /* Скругленные углы */
+
+}
+QLineEdit {
+    background-color: rgb(211,211,211); /* Темно-серый фон */
+	color: rgb(26, 26, 26);
+    border: none; /* Убираем рамку */
+
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>5</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="CustomLineEdit" name="inputLineEdit_3">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Open Sans SemiBold</family>
+        <pointsize>18</pointsize>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>CustomLineEdit/customlineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

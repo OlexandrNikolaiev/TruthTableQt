@@ -1,5 +1,4 @@
-// CustomLineEdit.cpp
-#include "CustomLineEdit.h"
+#include "customLineedit.h"
 
 CustomLineEdit::CustomLineEdit(QWidget *parent)
     : QLineEdit(parent)
@@ -11,24 +10,19 @@ void CustomLineEdit::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Plus) {
         insert("∨");
     }
-    else if (event->key() == Qt::Key_Exclam)
-    {
+    else if (event->key() == Qt::Key_Exclam) {
         insert("¬");
     }
-    else if (event->key() == Qt::Key_Asterisk)
-    {
+    else if (event->key() == Qt::Key_Asterisk) {
         insert("∧");
     }
-    else if (event->key() == Qt::Key_Period)
-    {
+    else if (event->key() == Qt::Key_Period) {
         insert("⇒");
     }
-    else if (event->key() == Qt::Key_Equal)
-    {
+    else if (event->key() == Qt::Key_Equal) {
         insert("⇔");
     }
-    else
-    {
+    else {
         QLineEdit::keyPressEvent(event);
     }
 }

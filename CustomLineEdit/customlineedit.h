@@ -1,4 +1,3 @@
-// CustomLineEdit.h
 #ifndef CUSTOMLINEEDIT_H
 #define CUSTOMLINEEDIT_H
 
