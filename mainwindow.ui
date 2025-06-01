@@ -77,7 +77,7 @@ QLabel
              <number>0</number>
             </property>
             <item>
-             <widget class="CustomLineEdit" name="inputLineEdit">
+             <widget class="QLineEdit" name="inputLineEdit">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -516,13 +516,6 @@ QPushButton:hover
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>CustomLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>CustomLineEdit/customlineedit.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

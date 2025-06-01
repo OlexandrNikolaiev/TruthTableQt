@@ -52,15 +52,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_buildButton_clicked()
 {
-    QString expr = ui->inputLineEdit->text();
-    if (expr.isEmpty()) {
-        QMessageBox::warning(this, "Помилка", "Ви не ввели логічний вираз!");
-        return;
-    }
+    QString expr = ui->inputLineEdit->text().trimmed();
+    // if (expr.isEmpty()) {
+    //     QMessageBox::warning(this, "Помилка", "Ви не ввели логічний вираз!");
+    //     return;
+    // }
 
-    tableBuilder->setExpression(expr.toStdString());
-    if (!tableBuilder->build()) {
-        QMessageBox::critical(this, "Помилка", "Не вдалося побудувати таблицю істинності.");
+    // Перевірка виразу
+    std::string error = tableBuilder->validateExpression(expr.toStdString());
+    if (!error.empty()) {
+        QMessageBox::warning(this, "Помилка", QString::fromStdString(error));
         return;
     }
 

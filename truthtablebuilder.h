@@ -8,6 +8,7 @@ class TruthTableBuilder {
 public:
     TruthTableBuilder();
     void setExpression(const std::string& expr);
+    std::string validateExpression(const std::string& expr) const;
     bool build();
 
     int varCount() const;

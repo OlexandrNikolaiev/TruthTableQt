@@ -4,6 +4,8 @@
 #include <set>
 #include <cctype>
 #include <unordered_map>
+#include <qdebug.h>
+#include <algorithm>
 
 TruthTableBuilder::TruthTableBuilder() {}
 
@@ -12,6 +14,86 @@ TruthTableBuilder::TruthTableBuilder() {}
 void TruthTableBuilder::setExpression(const std::string& expr) {
 
     _infix = normalizeOperators(expr);
+}
+
+std::string TruthTableBuilder::validateExpression(const std::string& expr) const {
+    if (expr.empty()) {
+        return "Вираз не може бути порожнім.";
+    }
+
+    // Дозволені символи: латинські літери, оператори, дужки, пробіли
+    std::string allowedOperators = "!*+>=";
+    std::string allowedChars = allowedOperators + "() ";
+
+    // Перевірка на кириличні символи та некоректні символи
+    for (char ch : expr) {
+        // if (allowedChars.find(ch) == std::string::npos && !std::isalpha(ch)) {
+        //     return "Вираз містить недопустимі символи: '" + std::string(1, ch) + "'.";
+        // }
+        if (ch >= 0x0400 && ch <= 0x04FF) { // Кириличні символи
+            return "Вираз містить кириличні символи: '" + std::string(1, ch) + "'.";
+        }
+    }
+
+    // Перевірка балансу дужок
+    int balance = 0;
+    for (char ch : expr) {
+        if (ch == '(') balance++;
+        else if (ch == ')') balance--;
+        if (balance < 0) {
+            return "Незбалансовані дужки: закриваюча дужка перед відкриваючою.";
+        }
+    }
+    if (balance != 0) {
+        return "Незбалансовані дужки: не вистачає закриваючих або відкриваючих дужок.";
+    }
+
+    // Перевірка на порожні дужки
+    for (size_t i = 0; i < expr.size() - 1; ++i) {
+        if (expr[i] == '(' && expr[i + 1] == ')') {
+            return "Знайдено порожні дужки '()' у виразі.";
+        }
+    }
+
+    // Перевірка на правильність операторів
+    for (size_t i = 0; i < expr.size(); ++i) {
+        char ch = expr[i];
+        if (allowedOperators.find(ch) != std::string::npos) {
+            if (i == 0 && ch != '!') {
+                return "Вираз не може починатися з бінарного оператора '" + std::string(1, ch) + "'.";
+            }
+            if (i == expr.size() - 1) {
+                return "Вираз не може закінчуватися оператором '" + std::string(1, ch) + "'.";
+            }
+            if (allowedOperators.find(expr[i + 1]) != std::string::npos) {
+                return "Два оператори поспіль: '" + std::string(1, ch) + "' і '" + std::string(1, expr[i + 1]) + "'.";
+            }
+        }
+    }
+
+    // Перевірка на наявність змінних
+    std::vector<char> vars = extractVariables(expr);
+    if (vars.empty()) {
+        return "Вираз не містить змінних.";
+    }
+
+    // Обмеження кількості змінних (наприклад, не більше 10)
+    if (vars.size() > 10) {
+        return "Занадто багато змінних (" + std::to_string(vars.size()) + "). Максимум дозволено: 10.";
+    }
+
+    // Перевірка на коректність унарного оператора '!'
+    for (size_t i = 0; i < expr.size() - 1; ++i) {
+        if (expr[i] == '!') {
+            char next = expr[i + 1];
+            if (!std::isalnum(next) && next != '(') {
+                return "Після унарного оператора '!' має бути змінна або відкриваюча дужка.";
+            }
+        }
+    }
+
+    qDebug()<<"correct";
+    return ""; // Вираз коректний
 }
 
 int TruthTableBuilder::precedence(char op) const {
