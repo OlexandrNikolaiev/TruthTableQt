@@ -5,7 +5,10 @@
 #include <memory>
 #include <QVector>
 #include <QActionGroup>
-#include "truthtablebuilder.h"
+#include <QScopedPointer>
+#include <QGraphicsDropShadowEffect>
+
+#include "TruthTableTab/truthtabletab.h"
 #include "IniManager/SettingsManager/settingsmanager.h"
 
 QT_BEGIN_NAMESPACE
@@ -27,23 +30,30 @@ private slots:
     void onMenuActionTriggered(bool checked);
 
     void on_buildButton_clicked();
-    void on_clearButton_clicked();
-    void on_truthTable_cellEntered(int row, int column);
+
+    void closeTab(int tabNumber);
 
     void closeEvent(QCloseEvent *event);
 
+signals:
+    void changeCellHoverColorSignal(QColor);
+
 private:
     Ui::MainWindow *ui;
-    std::unique_ptr<TruthTableBuilder> tableBuilder;
-    int varCount;
-    QVector<QVector<int>> childDeps;
-    void clearRowHighlight(int row);
 
     SettingsManager* settings;
-    QActionGroup* colorGroup;
+
     QColor currentCellHoverColor;
+    QActionGroup* colorGroup;
+    Tab* tab;
 
     void loadSettings();
+
+    QString validateExpression(const QString& expr) const;
+    QVector<QChar> extractVariables(const QString& expr) const;
+    int findTabIndexByName(QTabWidget *tabWidget, const QString &tabName);
+
+
 };
 
 #endif // MAINWINDOW_H

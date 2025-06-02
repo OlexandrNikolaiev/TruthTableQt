@@ -11,9 +11,10 @@
 
 class TruthTableBuilder {
 public:
-    TruthTableBuilder();
+    static TruthTableBuilder* getInstance();
+
     void setExpression(const QString& expr);
-    QString validateExpression(const QString& expr) const;
+
     bool build();
 
     int varCount() const;
@@ -25,7 +26,15 @@ public:
     const QVector<QVector<int>>& getChildDependencies() const;
     bool value(int row, int col) const;
 
+    ~TruthTableBuilder() = default;
+
+
 private:
+    // singleton
+    TruthTableBuilder();
+    TruthTableBuilder(const TruthTableBuilder&) = delete;
+    TruthTableBuilder& operator=(const TruthTableBuilder&) = delete;
+
     QString _infix;
     QString _postfix;
     QVector<QChar> _varList;

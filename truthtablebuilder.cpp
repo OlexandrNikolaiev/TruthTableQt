@@ -2,90 +2,17 @@
 
 TruthTableBuilder::TruthTableBuilder() {}
 
+TruthTableBuilder *TruthTableBuilder::getInstance() {
+    static TruthTableBuilder _instance;
+    qDebug()<<"returning instance " << &_instance;
+    return &_instance;
+}
+
 void TruthTableBuilder::setExpression(const QString& expr) {
     _infix = normalizeOperators(expr);
 }
 
-QString TruthTableBuilder::validateExpression(const QString& expr) const {
-    if (expr.isEmpty()) {
-        return QString("Вираз не може бути порожнім.");
-    }
 
-    QString allowedOperators = "!*+>=∨¬∧⇒⇔";
-    QSet<QChar> allowedChars;
-    for (QChar ch : allowedOperators + "() ") {
-        allowedChars.insert(ch);
-    }
-
-    for (QChar ch : expr) {
-        if (!allowedChars.contains(ch) && !ch.isLetter()) {
-            return QString("Вираз містить недопустимі символи: '%1'.").arg(ch);
-        }
-        if (ch.unicode() >= 0x0400 && ch.unicode() <= 0x04FF) {
-            return QString("Вираз містить кириличні символи: '%1'.").arg(ch);
-        }
-    }
-
-    int balance = 0;
-    for (QChar ch : expr) {
-        if (ch == '(') balance++;
-        else if (ch == ')') balance--;
-        if (balance < 0) {
-            return QString("Незбалансовані дужки: закриваюча дужка перед відкриваючою.");
-        }
-    }
-    if (balance != 0) {
-        return QString("Незбалансовані дужки: не вистачає закриваючих або відкриваючих дужок.");
-    }
-
-    for (int i = 0; i < expr.size() - 1; ++i) {
-        if (expr[i] == '(' && expr[i + 1] == ')') {
-            return QString("Знайдено порожні дужки '()' у виразі.");
-        }
-    }
-
-    for (int i = 0; i < expr.size(); ++i) {
-        QString binaryOperators = "*+>=";
-        QChar ch = expr[i];
-        if (allowedOperators.contains(ch)) {
-            if (i == expr.size() - 1) {
-                return QString("Вираз не може закінчуватися оператором '%1'.").arg(ch);
-            }
-            for (int i = 0; i < expr.size() - 1; ++i) {
-                QChar current = expr[i];
-                QChar next = expr[i + 1];
-
-                // Якщо поточний символ — бінарний оператор
-                if (binaryOperators.contains(current)) {
-                    // І наступний символ також бінарний оператор
-                    if (binaryOperators.contains(next)) {
-                        return QString("Помилка: два бінарних оператори поспіль: '%1' і '%2'.").arg(current).arg(next);
-                    }
-                }
-            }
-        }
-    }
-
-    QVector<QChar> vars = extractVariables(expr);
-    if (vars.isEmpty()) {
-        return QString("Вираз не містить змінних.");
-    }
-
-    if (vars.size() > 10) {
-        return QString("Занадто багато змінних (%1). Максимум дозволено: 10.").arg(vars.size());
-    }
-
-    for (int i = 0; i < expr.size() - 1; ++i) {
-        if (expr[i] == '!') {
-            QChar next = expr[i + 1];
-            if (!next.isLetterOrNumber() && next != '(') {
-                return QString("Після унарного оператора '!' має бути змінна або відкриваюча дужка.");
-            }
-        }
-    }
-
-    return QString("");
-}
 
 int TruthTableBuilder::precedence(QChar op) const {
     if (op == '!') return 3;

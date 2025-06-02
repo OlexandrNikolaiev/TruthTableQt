@@ -20,6 +20,8 @@ qt_add_executable(cursova
     IniManager/HistoryManager/historymanager.h IniManager/HistoryManager/historymanager.cpp
     form.ui
 
+    TruthTableTab/truthtabletab.h TruthTableTab/truthtabletab.cpp TruthTableTab/truthtabletab.ui
+
 )
 
 #qt_add_translations(
@@ -31,7 +33,6 @@ target_link_libraries(cursova
     PRIVATE
         Qt::Core
         Qt::Widgets
-        Qt6::Concurrent
 )
 
 include(GNUInstallDirs)
