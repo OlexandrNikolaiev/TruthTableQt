@@ -19,6 +19,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->inputLineEdit,   &QLineEdit::returnPressed,   this, &MainWindow::on_buildButton_clicked);
     connect(ui->calculateButton, &QPushButton::clicked,       this, &MainWindow::on_buildButton_clicked);
+    connect(ui->backspaceButton, &QPushButton::clicked, this, [=]() {
+        QString text = ui->inputLineEdit->text();
+        if (!text.isEmpty()) {
+            text.chop(1);
+            ui->inputLineEdit->setText(text);
+        }
+    });
     //connect(ui->clearButton,     &QPushButton::clicked,       this, &MainWindow::on_clearButton_clicked);
 
 
@@ -38,6 +45,10 @@ MainWindow::MainWindow(QWidget *parent)
         shadow->setColor(QColor(0,0,0,150));
         return shadow;
     };
+
+    ui->frame_2->setGraphicsEffect(makeShadow());
+    ui->calculateButton->setGraphicsEffect(makeShadow());
+    ui->backspaceButton->setGraphicsEffect(makeShadow());
 
     ui->negationButton->setGraphicsEffect(makeShadow());
     ui->conjunctionButton->setGraphicsEffect(makeShadow());
@@ -97,7 +108,56 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stackedWidget->setCurrentIndex(0);
     loadSettings();
 
+    ui->welcomeLabel->setText(
+        "<h1 style='text-align: center;'>Ласкаво просимо до Генератора таблиць істинності!</h1>"
+        "<p style='text-align: center;'>Цей інструмент дозволяє швидко створювати таблиці істинності для логічних виразів. "
+        "Вводьте вирази, будуйте таблиці та аналізуйте результати!</p>"
 
+        "<h2 style='text-align: center;'>Як почати?</h2>"
+        "<p style='text-align: center;'>"
+        "1. &nbsp;Введіть логічний вираз у поле 'Введіть логічний вираз...' у верхній частині вікна.<br>"
+        "2. &nbsp;Натисніть кнопку 'Побудувати' або клавішу Enter, щоб згенерувати таблицю істинності."
+        "</p>"
+
+        "<h2 style='text-align: center;'>Приклади виразів</h2>"
+        "<p style='text-align: center;'>"
+        "1. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>A ∧ B</span> — кон'юнкція A та B."
+        "</p>"
+        "<p style='text-align: center;'>"
+        "2. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>¬(A ∨ B)</span> — заперечення диз'юнкції A і B."
+        "</p>"
+        "<p style='text-align: center;'>"
+        "3. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>(A ⇒ B) ⇔ (¬A ∨ B)</span> — еквіваленція імплікації та її розкладення."
+        "</p> <br><br><br>"
+
+        "<h2 style='text-align: center;'>Бажаєте вдосконалити програму?</h2> "
+        "<p style='text-align: center;'>"
+        "<a href='https://github.com/OlexandrNikolaiev/TruthTableQt'>Відкритий код проєкту</a>"
+        "</p>"
+        );
+
+    ui->welcomeImage->setTextFormat(Qt::RichText);          // Дозволяє HTML
+    ui->welcomeImage->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    ui->welcomeImage->setOpenExternalLinks(true);           // Відкривати посилання у браузері
+
+
+    // ui->welcomeLabel_3->ins(
+    //     "<h2>Приклади виразів:</h2>"
+
+    //     );
+    QPixmap pixmap("builder.png");
+    if (pixmap.isNull()) {
+        qDebug() << "Не удалось загрузить изображение!";
+    } else {
+        ui->welcomeImage->setPixmap(pixmap);
+    }
+
+    ui->welcomeImage->setPixmap(pixmap.scaled(ui->welcomeImage->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    ui->welcomeImage->setScaledContents(true); // Если хочешь, чтобы QLabel сам масштабировал изображение
+
+
+    ui->welcomeLabel->setWordWrap(true);
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onTabChanged);
 }
 
 MainWindow::~MainWindow()
@@ -235,6 +295,18 @@ void MainWindow::closeTab(int tabNumber)
     ui->tabWidget->removeTab(tabNumber);
 
     widget->deleteLater();
+
+    if (ui->tabWidget->count() == 0)
+    {
+        ui->stackedWidget->setCurrentIndex(0);
+        ui->inputLineEdit->clear();
+    }
+}
+
+void MainWindow::onTabChanged(int index)
+{
+    QString tabName = ui->tabWidget->tabText(index);
+    ui->inputLineEdit->setText(tabName);
 }
 
 
@@ -391,3 +463,5 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings->saveWindowGeometry(saveGeometry());
     QMainWindow::closeEvent(event);
 }
+
+

@@ -32,8 +32,10 @@ private slots:
     void on_buildButton_clicked();
 
     void closeTab(int tabNumber);
+    void onTabChanged(int index);
 
     void closeEvent(QCloseEvent *event);
+
 
 signals:
     void changeCellHoverColorSignal(QColor);

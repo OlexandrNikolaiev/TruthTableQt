@@ -25,6 +25,7 @@ public slots:
 private slots:
     void on_truthTable_cellEntered(int row, int column);
 
+
 private:
     Ui::Tab *ui;
     TruthTableBuilder* tableBuilder;
@@ -35,6 +36,7 @@ private:
     QColor currentCellHoverColor;
 
     void clearRowHighlight(int row);
+
 
 
 };
