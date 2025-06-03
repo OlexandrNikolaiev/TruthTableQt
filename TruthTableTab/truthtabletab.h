@@ -16,6 +16,7 @@ class Tab : public QWidget
 public:
     explicit Tab(QWidget *parent = nullptr, QString expression = "", QColor cellHoverColor = "#00FFFFFF");
     ~Tab();
+    int getExpersionType() { return expressionType; }
 
 public slots:
     void build(QString expression);
@@ -24,6 +25,9 @@ public slots:
 
 private slots:
     void on_truthTable_cellEntered(int row, int column);
+
+signals:
+    void sendExpressionTypeSignal(int);
 
 
 private:
@@ -37,7 +41,11 @@ private:
 
     void clearRowHighlight(int row);
 
+    int expressionType;
+    QString currentHoveredOperator; //unused if commented
 
+
+    void determineExpressionType();
 
 };
 

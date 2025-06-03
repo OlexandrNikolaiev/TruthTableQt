@@ -21,7 +21,7 @@ Tab::Tab(QWidget *parent, QString expression, QColor cellHoverColor)
     connect(ui->truthTable,      &QTableWidget::cellEntered,  this, &Tab::on_truthTable_cellEntered);
 
     qDebug()<<"building "<<expression;
-    build(expression);
+    //build(expression);
 }
 
 Tab::~Tab()
@@ -92,6 +92,8 @@ void Tab::build(QString expression)
 
     ui->truthTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     qDebug()<<"built";
+
+    determineExpressionType();
 }
 
 void Tab::changeCellHoverColor(QColor color)
@@ -114,6 +116,45 @@ void Tab::clearRowHighlight(int row)
             item->setBackground(Qt::white);
     }
 }
+
+void Tab::determineExpressionType()
+{
+    qDebug()<<"determining";
+    int rowCount = ui->truthTable->rowCount();
+    int lastColumn = ui->truthTable->columnCount() - 1;
+
+    bool allTrue = true;
+    bool allFalse = true;
+
+    for (int row = 0; row < rowCount; ++row) {
+        QTableWidgetItem* item = ui->truthTable->item(row, lastColumn);
+        if (!item) {
+            continue;
+        }
+
+        QString value = item->text().trimmed();
+
+        qDebug()<<value;
+        if (value != "1") {
+            allTrue = false;
+        }
+        if (value != "0") {
+            allFalse = false;
+        }
+    }
+
+    if (allTrue) {
+        expressionType = 0;
+        emit sendExpressionTypeSignal(expressionType);
+    } else if (allFalse) {
+        expressionType = 1;
+        emit sendExpressionTypeSignal(expressionType);
+    } else {
+        expressionType = 2;
+        emit sendExpressionTypeSignal(expressionType);
+    }
+}
+
 
 void Tab::on_truthTable_cellEntered(int row, int column)
 {

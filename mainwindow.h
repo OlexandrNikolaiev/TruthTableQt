@@ -36,6 +36,8 @@ private slots:
 
     void closeEvent(QCloseEvent *event);
 
+    void setExpressionType(int type);
+
 
 signals:
     void changeCellHoverColorSignal(QColor);
@@ -47,7 +49,7 @@ private:
 
     QColor currentCellHoverColor;
     QActionGroup* colorGroup;
-    Tab* tab;
+    Tab* _tab;
 
     void loadSettings();
 

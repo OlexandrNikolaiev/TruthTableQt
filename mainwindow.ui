@@ -69,22 +69,6 @@
              </property>
             </spacer>
            </item>
-           <item row="0" column="0">
-            <spacer name="horizontalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>50</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
            <item row="0" column="1">
             <widget class="QFrame" name="frame_6">
              <property name="frameShape">
@@ -94,6 +78,9 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_9">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item row="0" column="2">
                <spacer name="horizontalSpacer_5">
                 <property name="orientation">
@@ -146,19 +133,6 @@
                  <bool>true</bool>
                 </property>
                </widget>
-              </item>
-              <item row="2" column="1">
-               <spacer name="verticalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
               </item>
               <item row="0" column="1">
                <widget class="QFrame" name="frame_7">
@@ -217,6 +191,22 @@
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="0">
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>50</width>
                <height>20</height>
               </size>
              </property>
@@ -802,7 +792,7 @@ QPushButton:hover
            </spacer>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="expressionTypeLabel">
             <property name="font">
              <font>
               <family>Open Sans</family>
@@ -810,7 +800,7 @@ QPushButton:hover
              </font>
             </property>
             <property name="text">
-             <string>Вираз нейтральний</string>
+             <string/>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>

@@ -128,7 +128,7 @@ MainWindow::MainWindow(QWidget *parent)
         "</p>"
         "<p style='text-align: center;'>"
         "3. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>(A ⇒ B) ⇔ (¬A ∨ B)</span> — еквіваленція імплікації та її розкладення."
-        "</p> <br><br><br>"
+        "</p> <br>"
 
         "<h2 style='text-align: center;'>Бажаєте вдосконалити програму?</h2> "
         "<p style='text-align: center;'>"
@@ -276,9 +276,12 @@ void MainWindow::on_buildButton_clicked()
         return;
     }
 
-    tab = new Tab(nullptr, expression, currentCellHoverColor);
-    connect(this, &MainWindow::changeCellHoverColorSignal, tab, &Tab::changeCellHoverColor);
-    int index = ui->tabWidget->addTab(tab, expression);
+    _tab = new Tab(nullptr, expression, currentCellHoverColor);
+    connect(this, &MainWindow::changeCellHoverColorSignal, _tab, &Tab::changeCellHoverColor);
+    connect(_tab, &Tab::sendExpressionTypeSignal, this, &MainWindow::setExpressionType);
+    _tab->build(expression);
+
+    int index = ui->tabWidget->addTab(_tab, expression);
     ui->tabWidget->setCurrentIndex(index);
 
     ui->stackedWidget->setCurrentIndex(1);
@@ -307,6 +310,29 @@ void MainWindow::onTabChanged(int index)
 {
     QString tabName = ui->tabWidget->tabText(index);
     ui->inputLineEdit->setText(tabName);
+
+    QWidget* widget = ui->tabWidget->widget(index);
+    if (!widget)
+        return;
+    Tab* tab = qobject_cast<Tab*>(widget);
+    int type = tab->getExpersionType();
+
+    qDebug()<<"tab changed, type: "<<type;
+    switch (type)
+    {
+    case 0:
+        ui->expressionTypeLabel->setText("Тип виразу: тавтологія");
+        ui->expressionTypeLabel->setStyleSheet("color: green;");
+        return;
+    case 1:
+        ui->expressionTypeLabel->setText("Тип виразу: протиріччя");
+        ui->expressionTypeLabel->setStyleSheet("color: red;");
+        return;
+    case 2:
+        ui->expressionTypeLabel->setText("Тип виразу: нейтральний (виконуваний)");
+        ui->expressionTypeLabel->setStyleSheet("color: black;");
+        return;
+    }
 }
 
 
@@ -462,6 +488,26 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     settings->saveWindowGeometry(saveGeometry());
     QMainWindow::closeEvent(event);
+}
+
+void MainWindow::setExpressionType(int type)
+{
+    qDebug()<<"set type " << type;
+
+
+    switch (type)
+    {
+    case 0:
+        ui->expressionTypeLabel->setText("Тип виразу: тавтологія");
+        ui->expressionTypeLabel->setStyleSheet("color: green;");
+    case 1:
+        ui->expressionTypeLabel->setText("Тип виразу: протиріччя");
+        ui->expressionTypeLabel->setStyleSheet("color: red;");
+    case 2:
+        ui->expressionTypeLabel->setText("Тип виразу: нейтральний (виконуваний)");
+        ui->expressionTypeLabel->setStyleSheet("color: black;");
+    }
+    //ui->expressionTypeLabel->setText(type);
 }
 
 
