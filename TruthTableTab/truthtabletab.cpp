@@ -20,13 +20,40 @@ Tab::Tab(QWidget *parent, QString expression, QColor cellHoverColor)
             });
     connect(ui->truthTable,      &QTableWidget::cellEntered,  this, &Tab::on_truthTable_cellEntered);
 
-    qDebug()<<"building "<<expression;
-    //build(expression);
+    ui->truthTable->installEventFilter(this);
 }
 
 Tab::~Tab()
 {
     delete ui;
+}
+
+QString Tab::extractTopLevelOperator(const QString& header) {
+    if (header.startsWith("¬")) {
+        return "Заперечення";
+    }
+    // Якщо підвираз у дужках, наприклад "(A ∧ B)", витягуємо бінарну операцію
+    else if (header.startsWith("(") && header.endsWith(")")) {
+        QString inner = header.mid(1, header.size() - 2); // Видаляємо зовнішні дужки
+        int level = 0;
+        for (int i = 0; i < inner.size(); ++i) {
+            QChar ch = inner[i];
+            if (ch == '(') level++;
+            else if (ch == ')') level--;
+            else if (level == 0 && (ch == QChar(0x2227) || ch == QChar(0x2228) || ch == QChar(0x21D2) || ch == QChar(0x21D4))) {
+
+                return QString(operatorNames.value(ch));
+            }
+        }
+    }
+    return "";
+}
+
+bool Tab::eventFilter(QObject *obj, QEvent *event) {
+    if (obj == ui->truthTable && event->type() == QEvent::Leave) {
+        emit statusMessageRequested("");
+    }
+    return QWidget::eventFilter(obj, event);
 }
 
 void Tab::build(QString expression)
@@ -156,18 +183,31 @@ void Tab::determineExpressionType()
 }
 
 
-void Tab::on_truthTable_cellEntered(int row, int column)
-{
+void Tab::on_truthTable_cellEntered(int row, int column) {
     int rows = ui->truthTable->rowCount();
     for (int i = 0; i < rows; i++) {
         clearRowHighlight(i);
     }
-
     if (column >= varCount) {
         int idx = column - varCount;
         for (int childCol : childDeps[idx]) {
             if (auto item = ui->truthTable->item(row, childCol))
                 item->setBackground(currentCellHoverColor);
+        }
+    }
+
+    if (column < varCount) {
+        // змінні
+        QString var = ui->truthTable->horizontalHeaderItem(column)->text();
+        emit statusMessageRequested("Змінна: " + var);
+    } else {
+        // підвирази
+        QString header = ui->truthTable->horizontalHeaderItem(column)->text();
+        QString op = extractTopLevelOperator(header);
+        if (!op.isEmpty()) {
+            emit statusMessageRequested("Операція: " + op);
+        } else {
+            emit statusMessageRequested("Підвираз: " + header); // nikogda ne rabotaet
         }
     }
 }

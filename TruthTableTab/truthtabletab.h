@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QMessageBox>
-#include "../truthtablebuilder.h"
+#include "../TruthTableBuilder/truthtablebuilder.h"
 
 namespace Ui {
 class Tab;
@@ -17,6 +17,8 @@ public:
     explicit Tab(QWidget *parent = nullptr, QString expression = "", QColor cellHoverColor = "#00FFFFFF");
     ~Tab();
     int getExpersionType() { return expressionType; }
+    QString extractTopLevelOperator(const QString& header);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 public slots:
     void build(QString expression);
@@ -28,6 +30,7 @@ private slots:
 
 signals:
     void sendExpressionTypeSignal(int);
+    void statusMessageRequested(QString);
 
 
 private:
@@ -46,6 +49,14 @@ private:
 
 
     void determineExpressionType();
+
+    const QMap<QChar, QString> operatorNames = {
+        {QChar(0x00AC), "Заперечення"},
+        {QChar(0x2227), "Кон'юнкція"},
+        {QChar(0x2228), "Диз'юнкція"},
+        {QChar(0x21D2), "Імплікація"},
+        {QChar(0x21D4), "Еквівалентність"}
+    };
 
 };
 

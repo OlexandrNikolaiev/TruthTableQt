@@ -12,10 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     settings = new SettingsManager("settings.ini");
 
-
-
     this->setWindowTitle("Генератор таблиць істинності");
     ui->inputLineEdit->setPlaceholderText("Введіть логічний вираз...");
+    ui->inputLineEdit->setFocus();
 
     connect(ui->inputLineEdit,   &QLineEdit::returnPressed,   this, &MainWindow::on_buildButton_clicked);
     connect(ui->calculateButton, &QPushButton::clicked,       this, &MainWindow::on_buildButton_clicked);
@@ -26,17 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
             ui->inputLineEdit->setText(text);
         }
     });
-    //connect(ui->clearButton,     &QPushButton::clicked,       this, &MainWindow::on_clearButton_clicked);
-
-
-    //ui->horizontalLayout_2->setStretch(0,0);
-
-
-    //ui->frame_5->hide();
-    ui->statusbar->setVisible(true);
-    ui->statusbar->showMessage("123");
-
-    //ui->truthTable->hide();
 
     auto makeShadow = [&]() {
         auto *shadow = new QGraphicsDropShadowEffect;
@@ -89,7 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
     font.setPointSize(12);
     tabBar->setFont(font);
 
-
     connect(ui->action_showAuxButtons, &QAction::toggled, this, &MainWindow::onMenuActionTriggered);
     connect(ui->action_green, &QAction::triggered, this, &MainWindow::onMenuActionTriggered);
     connect(ui->action_grey, &QAction::triggered, this, &MainWindow::onMenuActionTriggered);
@@ -102,8 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
     colorGroup->setExclusive(false);
 
     connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::closeTab);
-
-    ui->inputLineEdit->setFocus();
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onTabChanged);
 
     ui->stackedWidget->setCurrentIndex(0);
     loadSettings();
@@ -136,28 +122,17 @@ MainWindow::MainWindow(QWidget *parent)
         "</p>"
         );
 
-    ui->welcomeImage->setTextFormat(Qt::RichText);          // Дозволяє HTML
-    ui->welcomeImage->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    ui->welcomeImage->setOpenExternalLinks(true);           // Відкривати посилання у браузері
-
-
-    // ui->welcomeLabel_3->ins(
-    //     "<h2>Приклади виразів:</h2>"
-
-    //     );
     QPixmap pixmap("builder.png");
     if (pixmap.isNull()) {
-        qDebug() << "Не удалось загрузить изображение!";
+        qDebug() << "couldn't load an image";
     } else {
         ui->welcomeImage->setPixmap(pixmap);
     }
 
     ui->welcomeImage->setPixmap(pixmap.scaled(ui->welcomeImage->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    ui->welcomeImage->setScaledContents(true); // Если хочешь, чтобы QLabel сам масштабировал изображение
-
+    ui->welcomeImage->setScaledContents(true);
 
     ui->welcomeLabel->setWordWrap(true);
-    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onTabChanged);
 }
 
 MainWindow::~MainWindow()
@@ -187,10 +162,7 @@ void MainWindow::on_auxiliaryButton_clicked()
 void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
 {
     QAction *senderAction = qobject_cast<QAction*>(sender());
-    qDebug()<<"1";
     if (!senderAction) return;
-    qDebug()<<"2";
-
 
     if (senderAction == ui->action_showAuxButtons) {
         if (checked) {
@@ -203,7 +175,6 @@ void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
         settings->saveShowAuxButtons(ui->action_showAuxButtons->isChecked());
         return;
     }
-    qDebug()<<"3";
 
     if (senderAction == ui->action_green) {
         if (checked) {
@@ -257,8 +228,6 @@ void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
         settings->saveCellHoverColor(currentCellHoverColor);
         emit changeCellHoverColorSignal(currentCellHoverColor);
     }
-
-
 }
 
 void MainWindow::on_buildButton_clicked()
@@ -279,6 +248,8 @@ void MainWindow::on_buildButton_clicked()
     _tab = new Tab(nullptr, expression, currentCellHoverColor);
     connect(this, &MainWindow::changeCellHoverColorSignal, _tab, &Tab::changeCellHoverColor);
     connect(_tab, &Tab::sendExpressionTypeSignal, this, &MainWindow::setExpressionType);
+    connect(_tab, &Tab::statusMessageRequested, this, &MainWindow::changeStatusBarText);
+
     _tab->build(expression);
 
     int index = ui->tabWidget->addTab(_tab, expression);
@@ -286,8 +257,6 @@ void MainWindow::on_buildButton_clicked()
 
     ui->stackedWidget->setCurrentIndex(1);
 }
-
-
 
 void MainWindow::closeTab(int tabNumber)
 {
@@ -299,10 +268,10 @@ void MainWindow::closeTab(int tabNumber)
 
     widget->deleteLater();
 
-    if (ui->tabWidget->count() == 0)
-    {
+    if (ui->tabWidget->count() == 0) {
         ui->stackedWidget->setCurrentIndex(0);
         ui->inputLineEdit->clear();
+        ui->expressionTypeLabel->clear();
     }
 }
 
@@ -333,12 +302,12 @@ void MainWindow::onTabChanged(int index)
         ui->expressionTypeLabel->setStyleSheet("color: black;");
         return;
     }
+    ui->statusbar->clearMessage();
 }
 
-
-void MainWindow::loadSettings() //todo итерироваться по всем виджетам таба, менять там цвет
+void MainWindow::loadSettings()
 {
-    QByteArray geometry = settings->loadWindowGeometry(); //todo if previous res bigger than current one
+    QByteArray geometry = settings->loadWindowGeometry(); // make support for different resolutions
     if (!geometry.isEmpty()) {
         restoreGeometry(geometry);
     } else {
@@ -371,9 +340,6 @@ void MainWindow::loadSettings() //todo итерироваться по всем 
         ui->action_grey->setChecked(false);
         ui->action_yellow->setChecked(false);
     }
-
-
-
 }
 
 QString MainWindow::validateExpression(const QString &expr) const
@@ -442,10 +408,6 @@ QString MainWindow::validateExpression(const QString &expr) const
         return QString("Вираз не містить змінних.");
     }
 
-    if (vars.size() > 10) {
-        return QString("Занадто багато змінних (%1). Максимум дозволено: 10.").arg(vars.size());
-    }
-
     for (int i = 0; i < expr.size() - 1; ++i) {
         if (expr[i] == '!') {
             QChar next = expr[i + 1];
@@ -481,9 +443,6 @@ int MainWindow::findTabIndexByName(QTabWidget *tabWidget, const QString &tabName
     return -1;
 }
 
-
-
-
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     settings->saveWindowGeometry(saveGeometry());
@@ -492,9 +451,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::setExpressionType(int type)
 {
-    qDebug()<<"set type " << type;
-
-
     switch (type)
     {
     case 0:
@@ -507,7 +463,11 @@ void MainWindow::setExpressionType(int type)
         ui->expressionTypeLabel->setText("Тип виразу: нейтральний (виконуваний)");
         ui->expressionTypeLabel->setStyleSheet("color: black;");
     }
-    //ui->expressionTypeLabel->setText(type);
+}
+
+void MainWindow::changeStatusBarText(QString text)
+{
+    ui->statusbar->showMessage(text);
 }
 
 

@@ -12,7 +12,7 @@ qt_add_executable(cursova
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    truthtablebuilder.h truthtablebuilder.cpp
+
     CustomLineEdit/customlineedit.h CustomLineEdit/customlineedit.cpp
     res.qrc
     IniManager/inimanager.h IniManager/inimanager.cpp
@@ -21,6 +21,8 @@ qt_add_executable(cursova
     form.ui
 
     TruthTableTab/truthtabletab.h TruthTableTab/truthtabletab.cpp TruthTableTab/truthtabletab.ui
+
+    TruthTableBuilder/truthtablebuilder.h TruthTableBuilder/truthtablebuilder.cpp
 
 )
 

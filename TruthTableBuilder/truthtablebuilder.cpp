@@ -12,8 +12,6 @@ void TruthTableBuilder::setExpression(const QString& expr) {
     _infix = normalizeOperators(expr);
 }
 
-
-
 int TruthTableBuilder::precedence(QChar op) const {
     if (op == '!') return 3;
     if (op == '*') return 2;

@@ -38,6 +38,8 @@ private slots:
 
     void setExpressionType(int type);
 
+    void changeStatusBarText(QString text);
+
 
 signals:
     void changeCellHoverColorSignal(QColor);
