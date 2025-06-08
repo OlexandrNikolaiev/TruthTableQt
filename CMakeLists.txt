@@ -23,6 +23,7 @@ qt_add_executable(cursova
     TruthTableTab/truthtabletab.h TruthTableTab/truthtabletab.cpp TruthTableTab/truthtabletab.ui
 
     TruthTableBuilder/truthtablebuilder.h TruthTableBuilder/truthtablebuilder.cpp
+    FileManager/filemanager.h FileManager/filemanager.cpp
 
 )
 

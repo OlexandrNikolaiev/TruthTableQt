@@ -10,6 +10,7 @@
 
 #include "TruthTableTab/truthtabletab.h"
 #include "IniManager/SettingsManager/settingsmanager.h"
+#include "FileManager/filemanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,6 +42,7 @@ private slots:
     void changeCurrentOperationText(QString text);
     void setStatusBarText(QString text);
 
+    void changeWindowTitle(QString newTitle);
 
 signals:
     void changeCellHoverColorSignal(QColor);
@@ -54,11 +56,15 @@ private:
     QActionGroup* colorGroup;
     Tab* _tab;
 
+    FileManager* fileManager;
+
     void loadSettings();
 
     QString validateExpression(const QString& expr) const;
     QVector<QChar> extractVariables(const QString& expr) const;
     int findTabIndexByName(QTabWidget *tabWidget, const QString &tabName);
+
+    void build(QString expression);
 
 
 };

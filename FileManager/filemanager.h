@@ -1,0 +1,46 @@
+#ifndef FILEMANAGER_H
+#define FILEMANAGER_H
+
+#include <QObject>
+#include <QTabWidget>
+#include <QString>
+#include <QWidget>
+
+// The FileManager class handles saving and loading tab names
+// to and from a .builder file for a QTabWidget, using
+// standard file dialogs for user interaction.
+
+class FileManager : public QObject {
+    Q_OBJECT
+
+public:
+    explicit FileManager(QTabWidget* tabWidget, QObject* parent = nullptr);
+
+    // Open a "Save As" dialog to choose a .builder file and save
+    bool saveWithDialog();
+    // Open an "Open" dialog to choose a .builder file and load
+    bool loadWithDialog();
+
+    // Direct save/load by filename
+    bool save();
+    bool load();
+
+    bool isOpenedTableModified();
+
+signals:
+    void sendExpressionFromFile(QString);
+    void sendNewTitle(QString);
+
+private:
+    QTabWidget* m_tabWidget;
+    QStringList _lastSavedTabs;
+    QStringList getCurrentTabs();
+
+    QString currentFilePath = "";
+    QString fileName;
+
+    QString getFileName(QString filePath);
+
+};
+
+#endif

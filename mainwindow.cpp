@@ -149,7 +149,8 @@ MainWindow::MainWindow(QWidget *parent)
     //     "<span style='font-size: 20px; font-weight: bold;'>'Enter' </span>— Заперечення"
     //     "");
 
-    QPixmap pixmap("builder.png");
+    QString imagePath = QCoreApplication::applicationDirPath() + "/builder.png";
+    QPixmap pixmap(imagePath);
     if (pixmap.isNull()) {
         qDebug() << "couldn't load an image";
     } else {
@@ -160,6 +161,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->welcomeImage->setScaledContents(true);
 
     ui->welcomeLabel->setWordWrap(true);
+
+    fileManager = new FileManager(ui->tabWidget, this);
+    connect(ui->action, &QAction::triggered, fileManager, &FileManager::saveWithDialog);
+    connect(ui->action_3, &QAction::triggered, fileManager, &FileManager::loadWithDialog);
+    connect(fileManager, &FileManager::sendExpressionFromFile, this, &MainWindow::build);
+    connect(fileManager, &FileManager::sendNewTitle, this, &MainWindow::changeWindowTitle);
 }
 
 MainWindow::~MainWindow()
@@ -259,53 +266,8 @@ void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
 
 void MainWindow::on_buildButton_clicked() //переробити час виконання коли буде зроблений многопоток
 {
-    QDateTime startTime = QDateTime::currentDateTime();
-    qDebug()<<startTime;
-
     QString expression = ui->inputLineEdit->text().trimmed();
-    int findIndex = findTabIndexByName(ui->tabWidget, expression);
-    if (findIndex!=-1) {
-        ui->tabWidget->setCurrentIndex(findIndex);
-        return;
-    }
-
-    QString error = validateExpression(expression);
-    if (!error.isEmpty()){
-        QMessageBox::warning(this, "Помилка", error);
-        return;
-    }
-
-    _tab = new Tab(nullptr, expression, currentCellHoverColor);
-    connect(this, &MainWindow::changeCellHoverColorSignal, _tab, &Tab::changeCellHoverColor);
-    connect(_tab, &Tab::sendExpressionTypeSignal, this, &MainWindow::setExpressionType);
-    connect(_tab, &Tab::statusMessageRequested, this, &MainWindow::changeCurrentOperationText);
-
-
-
-    _tab->build(expression);
-
-    int index = ui->tabWidget->addTab(_tab, expression);
-    ui->tabWidget->setCurrentIndex(index);
-
-    ui->stackedWidget->setCurrentIndex(1);
-
-    QDateTime endTime = QDateTime::currentDateTime();
-    qDebug()<<endTime;
-    qint64 elapsedMs = startTime.msecsTo(endTime);
-
-    int totalSeconds = elapsedMs / 1000;
-    int minutes = totalSeconds / 60;
-    int seconds = totalSeconds % 60;
-
-    QString formattedTime = QString("%1:%2")
-                                .arg(minutes, 2, 10, QChar('0'))
-                                .arg(seconds, 2, 10, QChar('0'));
-
-
-    _tab->setExecutionTime(formattedTime);
-    ui->statusbar->showMessage("Час виконання: " + formattedTime);
-
-    qDebug()<<formattedTime;
+    build(expression);
     //emit sendExecutionTime(formattedTime);
 }
 
@@ -491,11 +453,82 @@ int MainWindow::findTabIndexByName(QTabWidget *tabWidget, const QString &tabName
     return -1;
 }
 
+void MainWindow::build(QString expression)
+{
+    QDateTime startTime = QDateTime::currentDateTime();
+    qDebug()<<startTime;
+
+    int findIndex = findTabIndexByName(ui->tabWidget, expression);
+    if (findIndex!=-1) {
+        ui->tabWidget->setCurrentIndex(findIndex);
+        return;
+    }
+
+    QString error = validateExpression(expression);
+    if (!error.isEmpty()){
+        QMessageBox::warning(this, "Помилка", error);
+        return;
+    }
+
+    _tab = new Tab(nullptr, expression, currentCellHoverColor);
+    connect(this, &MainWindow::changeCellHoverColorSignal, _tab, &Tab::changeCellHoverColor);
+    connect(_tab, &Tab::sendExpressionTypeSignal, this, &MainWindow::setExpressionType);
+    connect(_tab, &Tab::statusMessageRequested, this, &MainWindow::changeCurrentOperationText);
+
+    _tab->build(expression);
+
+    int index = ui->tabWidget->addTab(_tab, expression);
+    ui->tabWidget->setCurrentIndex(index);
+
+    ui->stackedWidget->setCurrentIndex(1);
+
+    QDateTime endTime = QDateTime::currentDateTime();
+    qDebug()<<endTime;
+    qint64 elapsedMs = startTime.msecsTo(endTime);
+
+    int totalSeconds = elapsedMs / 1000;
+    int minutes = totalSeconds / 60;
+    int seconds = totalSeconds % 60;
+
+    QString formattedTime = QString("%1:%2")
+                                .arg(minutes, 2, 10, QChar('0'))
+                                .arg(seconds, 2, 10, QChar('0'));
+
+
+    _tab->setExecutionTime(formattedTime);
+    ui->statusbar->showMessage("Час виконання: " + formattedTime);
+
+    qDebug()<<formattedTime;
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     settings->saveWindowGeometry(saveGeometry());
-    QMainWindow::closeEvent(event);
+
+    if (fileManager->isOpenedTableModified())
+    {
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            this,
+            tr("Save Changes"),
+            tr("The tabs have been modified. Do you want to save your changes?"),
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
+            );
+
+        if (reply == QMessageBox::Yes) {
+            fileManager->save();
+            QMainWindow::closeEvent(event);
+        } else if (reply == QMessageBox::No) {
+            event->accept();
+            QMainWindow::closeEvent(event);
+        } else if (reply == QMessageBox::Cancel) {
+            event->ignore();
+            return;
+        }
+    } else {
+        QMainWindow::closeEvent(event);
+    }
 }
+
 
 void MainWindow::setExpressionType(int type)
 {
@@ -521,6 +554,11 @@ void MainWindow::changeCurrentOperationText(QString text)
 void MainWindow::setStatusBarText(QString text)
 {
     ui->statusbar->showMessage(text);
+}
+
+void MainWindow::changeWindowTitle(QString newTitle)
+{
+    this->setWindowTitle("Генератор таблиць істинності " + newTitle);
 }
 
 

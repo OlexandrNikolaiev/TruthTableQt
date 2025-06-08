@@ -1014,9 +1014,13 @@ QPushButton:pressed {
      <string>Файл</string>
     </property>
     <addaction name="action_3"/>
+    <addaction name="action_5"/>
     <addaction name="action"/>
     <addaction name="action_Excel"/>
+    <addaction name="separator"/>
     <addaction name="action_2"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menu_3"/>
    <addaction name="menu123"/>
@@ -1097,6 +1101,11 @@ QPushButton:pressed {
   <action name="action_3">
    <property name="text">
     <string>Відкрити</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Зберегти</string>
    </property>
   </action>
  </widget>
