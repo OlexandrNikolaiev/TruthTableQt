@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QMessageBox>
+#include <QDateTime>
 #include "../TruthTableBuilder/truthtablebuilder.h"
 
 namespace Ui {
@@ -16,9 +17,11 @@ class Tab : public QWidget
 public:
     explicit Tab(QWidget *parent = nullptr, QString expression = "", QColor cellHoverColor = "#00FFFFFF");
     ~Tab();
-    int getExpersionType() { return expressionType; }
+    int getExpressionType() { return expressionType; }
+    QString getExectuionTime() { return executionTime; }
     QString extractTopLevelOperator(const QString& header);
     bool eventFilter(QObject *obj, QEvent *event);
+    void setExecutionTime(QString time);
 
 public slots:
     void build(QString expression);
@@ -31,6 +34,7 @@ private slots:
 signals:
     void sendExpressionTypeSignal(int);
     void statusMessageRequested(QString);
+    void sendExecutionTime(QString);
 
 
 private:
@@ -51,12 +55,14 @@ private:
     void determineExpressionType();
 
     const QMap<QChar, QString> operatorNames = {
-        {QChar(0x00AC), "Заперечення"},
-        {QChar(0x2227), "Кон'юнкція"},
-        {QChar(0x2228), "Диз'юнкція"},
-        {QChar(0x21D2), "Імплікація"},
-        {QChar(0x21D4), "Еквівалентність"}
+        {QChar(0x00AC), "заперечення"},
+        {QChar(0x2227), "кон'юнкція"},
+        {QChar(0x2228), "диз'юнкція"},
+        {QChar(0x21D2), "імплікація"},
+        {QChar(0x21D4), "еквіваленція"}
     };
+
+    QString executionTime;
 
 };
 

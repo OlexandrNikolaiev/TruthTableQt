@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
     font.setBold(true);
     font.setPointSize(12);
     tabBar->setFont(font);
+    ui->statusbar->setFont(font);
 
     connect(ui->action_showAuxButtons, &QAction::toggled, this, &MainWindow::onMenuActionTriggered);
     connect(ui->action_green, &QAction::triggered, this, &MainWindow::onMenuActionTriggered);
@@ -105,22 +106,48 @@ MainWindow::MainWindow(QWidget *parent)
         "2. &nbsp;Натисніть кнопку 'Побудувати' або клавішу Enter, щоб згенерувати таблицю істинності."
         "</p>"
 
-        "<h2 style='text-align: center;'>Приклади виразів</h2>"
-        "<p style='text-align: center;'>"
-        "1. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>A ∧ B</span> — кон'юнкція A та B."
-        "</p>"
-        "<p style='text-align: center;'>"
-        "2. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>¬(A ∨ B)</span> — заперечення диз'юнкції A і B."
-        "</p>"
-        "<p style='text-align: center;'>"
-        "3. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>(A ⇒ B) ⇔ (¬A ∨ B)</span> — еквіваленція імплікації та її розкладення."
-        "</p> <br>"
+
 
         "<h2 style='text-align: center;'>Бажаєте вдосконалити програму?</h2> "
         "<p style='text-align: center;'>"
         "<a href='https://github.com/OlexandrNikolaiev/TruthTableQt'>Відкритий код проєкту</a>"
-        "</p>"
+        ""
         );
+
+    ui->welcomeLabel_2->setText(
+        "<h2 style='text-align: left;'>Приклади виразів</h2>"
+        "<p style='text-align: left;'>"
+        "1. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>A ∧ B</span> — кон'юнкція A та B."
+        "</p>"
+        "<p style='text-align: left;'>"
+        "2. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>¬(A ∨ B)</span> — заперечення диз'юнкції A та B."
+        "</p>"
+        "<p style='text-align: left;'>"
+        "3. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>(A ⇒ B) ⇔ (¬A ∨ B)</span> — еквіваленція імплікації та її розкладення."
+        "</p> <br><br><br>");
+
+    ui->welcomeLabel_3->setText(
+        "<h2 style='text-align: right;'>Гарячі клавіші</h2>"
+        "<p style='text-align: right; line-height: 0.7;'>"
+        "<span style='font-size: 20px; font-weight: bold;'>'>'</span> — Імплікація.</p>"
+        "<p style='text-align: right; line-height: 0.7;'>"
+        "<span style='font-size: 20px; font-weight: bold;'>'='</span> — Еквіваленція.</p>"
+        "<p style='text-align: right; line-height: 0.7;'>"
+        "<span style='font-size: 20px; font-weight: bold;'>Shift + '*'</span> — Кон'юнкція.</p>"
+        "<p style='text-align: right; line-height: 0.7;'>"
+        "<span style='font-size: 20px; font-weight: bold;'>Shift + '+'</span> — Диз'юнкція.</p>"
+        "<p style='text-align: right; line-height: 0.7;'>"
+        "<span style='font-size: 20px; font-weight: bold;'>Shift + '!'</span> — Заперечення.</p>"
+        "<br><br>");
+    // ui->welcomeLabel_3->setText(
+    //     "<h2 style='text-align: right;'>Гарячі клавіші</h2>"
+    //     "<p style='text-align: right;'>"
+    //     "<span style='font-size: 20px; font-weight: bold;'>'>' </span>— Кон'юнкція<br>"
+    //     "<span style='font-size: 20px; font-weight: bold;'>'=' </span>— Еквіваленція<br>"
+    //     "<span style='font-size: 20px; font-weight: bold;'>Shift + '*' </span>— Кон'юнкція<br>"
+    //     "<span style='font-size: 20px; font-weight: bold;'>Shift + '+' </span>— Диз'юнкція<br>"
+    //     "<span style='font-size: 20px; font-weight: bold;'>'Enter' </span>— Заперечення"
+    //     "");
 
     QPixmap pixmap("builder.png");
     if (pixmap.isNull()) {
@@ -230,8 +257,11 @@ void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
     }
 }
 
-void MainWindow::on_buildButton_clicked()
+void MainWindow::on_buildButton_clicked() //переробити час виконання коли буде зроблений многопоток
 {
+    QDateTime startTime = QDateTime::currentDateTime();
+    qDebug()<<startTime;
+
     QString expression = ui->inputLineEdit->text().trimmed();
     int findIndex = findTabIndexByName(ui->tabWidget, expression);
     if (findIndex!=-1) {
@@ -248,7 +278,9 @@ void MainWindow::on_buildButton_clicked()
     _tab = new Tab(nullptr, expression, currentCellHoverColor);
     connect(this, &MainWindow::changeCellHoverColorSignal, _tab, &Tab::changeCellHoverColor);
     connect(_tab, &Tab::sendExpressionTypeSignal, this, &MainWindow::setExpressionType);
-    connect(_tab, &Tab::statusMessageRequested, this, &MainWindow::changeStatusBarText);
+    connect(_tab, &Tab::statusMessageRequested, this, &MainWindow::changeCurrentOperationText);
+
+
 
     _tab->build(expression);
 
@@ -256,6 +288,25 @@ void MainWindow::on_buildButton_clicked()
     ui->tabWidget->setCurrentIndex(index);
 
     ui->stackedWidget->setCurrentIndex(1);
+
+    QDateTime endTime = QDateTime::currentDateTime();
+    qDebug()<<endTime;
+    qint64 elapsedMs = startTime.msecsTo(endTime);
+
+    int totalSeconds = elapsedMs / 1000;
+    int minutes = totalSeconds / 60;
+    int seconds = totalSeconds % 60;
+
+    QString formattedTime = QString("%1:%2")
+                                .arg(minutes, 2, 10, QChar('0'))
+                                .arg(seconds, 2, 10, QChar('0'));
+
+
+    _tab->setExecutionTime(formattedTime);
+    ui->statusbar->showMessage("Час виконання: " + formattedTime);
+
+    qDebug()<<formattedTime;
+    //emit sendExecutionTime(formattedTime);
 }
 
 void MainWindow::closeTab(int tabNumber)
@@ -272,6 +323,7 @@ void MainWindow::closeTab(int tabNumber)
         ui->stackedWidget->setCurrentIndex(0);
         ui->inputLineEdit->clear();
         ui->expressionTypeLabel->clear();
+        ui->statusbar->clearMessage();
     }
 }
 
@@ -284,25 +336,22 @@ void MainWindow::onTabChanged(int index)
     if (!widget)
         return;
     Tab* tab = qobject_cast<Tab*>(widget);
-    int type = tab->getExpersionType();
+    int type = tab->getExpressionType();
 
     qDebug()<<"tab changed, type: "<<type;
-    switch (type)
-    {
-    case 0:
+
+    if (type == 0) {
         ui->expressionTypeLabel->setText("Тип виразу: тавтологія");
         ui->expressionTypeLabel->setStyleSheet("color: green;");
-        return;
-    case 1:
+    } else if(type == 1) {
         ui->expressionTypeLabel->setText("Тип виразу: протиріччя");
         ui->expressionTypeLabel->setStyleSheet("color: red;");
-        return;
-    case 2:
+    } else {
         ui->expressionTypeLabel->setText("Тип виразу: нейтральний (виконуваний)");
         ui->expressionTypeLabel->setStyleSheet("color: black;");
-        return;
     }
-    ui->statusbar->clearMessage();
+
+    ui->statusbar->showMessage("Час виконання: " + tab->getExectuionTime());
 }
 
 void MainWindow::loadSettings()
@@ -324,7 +373,6 @@ void MainWindow::loadSettings()
     }
 
     currentCellHoverColor = settings->loadCellHoverColor();
-    qDebug()<<"current = "<<currentCellHoverColor;
     if (currentCellHoverColor == QColor("#22b14c")) {
         qDebug()<<"green";
         ui->action_green->setChecked(true);
@@ -465,7 +513,12 @@ void MainWindow::setExpressionType(int type)
     }
 }
 
-void MainWindow::changeStatusBarText(QString text)
+void MainWindow::changeCurrentOperationText(QString text)
+{
+    ui->operationLabel->setText(text);
+}
+
+void MainWindow::setStatusBarText(QString text)
 {
     ui->statusbar->showMessage(text);
 }

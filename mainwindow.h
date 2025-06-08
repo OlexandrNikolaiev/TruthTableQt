@@ -38,7 +38,8 @@ private slots:
 
     void setExpressionType(int type);
 
-    void changeStatusBarText(QString text);
+    void changeCurrentOperationText(QString text);
+    void setStatusBarText(QString text);
 
 
 signals:

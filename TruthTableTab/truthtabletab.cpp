@@ -30,7 +30,7 @@ Tab::~Tab()
 
 QString Tab::extractTopLevelOperator(const QString& header) {
     if (header.startsWith("¬")) {
-        return "Заперечення";
+        return "заперечення";
     }
     // Якщо підвираз у дужках, наприклад "(A ∧ B)", витягуємо бінарну операцію
     else if (header.startsWith("(") && header.endsWith(")")) {
@@ -56,8 +56,16 @@ bool Tab::eventFilter(QObject *obj, QEvent *event) {
     return QWidget::eventFilter(obj, event);
 }
 
+void Tab::setExecutionTime(QString time)
+{
+    executionTime = time;
+}
+
 void Tab::build(QString expression)
 {
+
+
+
     tableBuilder->setExpression(expression);
     if (!tableBuilder->build()) {
         QMessageBox::critical(this, "Помилка", "Не вдалося побудувати таблицю істинності.");
@@ -120,6 +128,7 @@ void Tab::build(QString expression)
     ui->truthTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     qDebug()<<"built";
 
+
     determineExpressionType();
 }
 
@@ -146,7 +155,6 @@ void Tab::clearRowHighlight(int row)
 
 void Tab::determineExpressionType()
 {
-    qDebug()<<"determining";
     int rowCount = ui->truthTable->rowCount();
     int lastColumn = ui->truthTable->columnCount() - 1;
 
@@ -161,7 +169,6 @@ void Tab::determineExpressionType()
 
         QString value = item->text().trimmed();
 
-        qDebug()<<value;
         if (value != "1") {
             allTrue = false;
         }
