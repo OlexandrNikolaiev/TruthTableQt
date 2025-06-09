@@ -4,7 +4,7 @@ TruthTableBuilder::TruthTableBuilder() {}
 
 TruthTableBuilder *TruthTableBuilder::getInstance() {
     static TruthTableBuilder _instance;
-    qDebug()<<"returning instance " << &_instance;
+    //qDebug()<<"returning instance " << &_instance;
     return &_instance;
 }
 

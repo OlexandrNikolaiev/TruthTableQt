@@ -1014,11 +1014,12 @@ QPushButton:pressed {
      <string>Файл</string>
     </property>
     <addaction name="action_3"/>
+    <addaction name="action_8"/>
     <addaction name="action_5"/>
     <addaction name="action"/>
     <addaction name="action_Excel"/>
     <addaction name="separator"/>
-    <addaction name="action_2"/>
+    <addaction name="closeProgramAction"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
    </widget>
@@ -1073,7 +1074,7 @@ QPushButton:pressed {
     <string>Експортувати в Excel</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="closeProgramAction">
    <property name="text">
     <string>Вийти з програми</string>
    </property>
@@ -1106,6 +1107,11 @@ QPushButton:pressed {
   <action name="action_5">
    <property name="text">
     <string>Зберегти</string>
+   </property>
+  </action>
+  <action name="action_8">
+   <property name="text">
+    <string>Закрити</string>
    </property>
   </action>
  </widget>

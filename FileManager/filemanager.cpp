@@ -39,11 +39,14 @@ bool FileManager::loadWithDialog()
     if (currentFilePath.isEmpty())
         return false;
 
+
+
     return load();
 }
 
 bool FileManager::save()
 {
+    _lastSavedTabs.clear();
     QFile file(currentFilePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qWarning() << "Could not open file for writing:" << currentFilePath;
@@ -59,6 +62,7 @@ bool FileManager::save()
         if (i < count - 1)
             out << '\n';
     }
+    qDebug()<<_lastSavedTabs;
 
     file.close();
     return true;
@@ -72,16 +76,13 @@ bool FileManager::load()
         return false;
     }
 
-
-
     emit sendNewTitle("| Відкрито: " + getFileName(currentFilePath));
+    emit changeActionStatus(true);
 
     // Clear existing tabs
-    while (m_tabWidget->count() > 0) {
-        QWidget* widget = m_tabWidget->widget(0);
-        m_tabWidget->removeTab(0);
-        delete widget;
-    }
+    _lastSavedTabs.clear();
+
+    //emit clearAllTabs();
 
     QTextStream in(&file);
     while (!in.atEnd()) {
@@ -93,6 +94,7 @@ bool FileManager::load()
         qDebug()<<title;
     }
 
+    changeDataLoaded(true);
     file.close();
     return true;
 }
@@ -106,6 +108,17 @@ bool FileManager::isOpenedTableModified()
     }
     return true;
 }
+
+bool FileManager::isFileDataLoaded()
+{
+    return dataLoaded;
+}
+
+void FileManager::changeDataLoaded(bool value)
+{
+    dataLoaded = value;
+}
+
 
 QStringList FileManager::getCurrentTabs()
 {

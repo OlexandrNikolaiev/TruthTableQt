@@ -126,7 +126,7 @@ void Tab::build(QString expression)
     }
 
     ui->truthTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    qDebug()<<"built";
+    //qDebug()<<"built";
 
 
     determineExpressionType();

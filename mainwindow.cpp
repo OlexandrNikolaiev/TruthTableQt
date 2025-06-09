@@ -55,19 +55,39 @@ MainWindow::MainWindow(QWidget *parent)
         "    background-color: rgb(36, 47, 61);"
         "    color: white;"
         "}"
+
         "QMenuBar::item {"
         "    background-color: rgb(36, 47, 61);"
         "    color: white;"
+        "    padding: 4px 10px;"
         "}"
+
         "QMenuBar::item:selected {"
-        "    background-color: rgb(37, 48, 62);"
+        "    background-color: rgb(46, 58, 74);"
         "}"
+
+        "QMenuBar::item:disabled {"
+        "    color: rgba(255, 255, 255, 80);"
+        "}"
+
         "QMenu {"
         "    background-color: rgb(40, 50, 64);"
         "    color: white;"
+        "    border: 1px solid rgb(60, 70, 85);"
         "}"
+
+        "QMenu::item {"
+        "    background-color: transparent;"
+        "    padding: 6px 20px;"
+        "    margin: 2px 0;"
+        "}"
+
         "QMenu::item:selected {"
-        "    background-color: rgb(40, 50, 64);"
+        "    background-color: rgb(55, 65, 80);"
+        "}"
+
+        "QMenu::item:disabled {"
+        "    color: rgba(255, 255, 255, 80);"
         "}"
         );
 
@@ -106,8 +126,6 @@ MainWindow::MainWindow(QWidget *parent)
         "2. &nbsp;Натисніть кнопку 'Побудувати' або клавішу Enter, щоб згенерувати таблицю істинності."
         "</p>"
 
-
-
         "<h2 style='text-align: center;'>Бажаєте вдосконалити програму?</h2> "
         "<p style='text-align: center;'>"
         "<a href='https://github.com/OlexandrNikolaiev/TruthTableQt'>Відкритий код проєкту</a>"
@@ -139,15 +157,6 @@ MainWindow::MainWindow(QWidget *parent)
         "<p style='text-align: right; line-height: 0.7;'>"
         "<span style='font-size: 20px; font-weight: bold;'>Shift + '!'</span> — Заперечення.</p>"
         "<br><br>");
-    // ui->welcomeLabel_3->setText(
-    //     "<h2 style='text-align: right;'>Гарячі клавіші</h2>"
-    //     "<p style='text-align: right;'>"
-    //     "<span style='font-size: 20px; font-weight: bold;'>'>' </span>— Кон'юнкція<br>"
-    //     "<span style='font-size: 20px; font-weight: bold;'>'=' </span>— Еквіваленція<br>"
-    //     "<span style='font-size: 20px; font-weight: bold;'>Shift + '*' </span>— Кон'юнкція<br>"
-    //     "<span style='font-size: 20px; font-weight: bold;'>Shift + '+' </span>— Диз'юнкція<br>"
-    //     "<span style='font-size: 20px; font-weight: bold;'>'Enter' </span>— Заперечення"
-    //     "");
 
     QString imagePath = QCoreApplication::applicationDirPath() + "/builder.png";
     QPixmap pixmap(imagePath);
@@ -167,6 +176,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_3, &QAction::triggered, fileManager, &FileManager::loadWithDialog);
     connect(fileManager, &FileManager::sendExpressionFromFile, this, &MainWindow::build);
     connect(fileManager, &FileManager::sendNewTitle, this, &MainWindow::changeWindowTitle);
+    connect(fileManager, &FileManager::changeActionStatus, this, &MainWindow::changeSaveAction);
+    connect(ui->action_5, &QAction::triggered, fileManager, &FileManager::save);
+    connect(this, &MainWindow::changeDataLoaded, fileManager, &FileManager::changeDataLoaded);
+    connect(ui->action_8, &QAction::triggered, this, &MainWindow::closeOpenedFile);
+    connect(fileManager, &FileManager::clearAllTabs, this, &MainWindow::closeOpenedFile);
+    changeSaveAction(false);
+
+    connect(ui->closeProgramAction, &QAction::triggered, this, &MainWindow::close);
 }
 
 MainWindow::~MainWindow()
@@ -286,6 +303,9 @@ void MainWindow::closeTab(int tabNumber)
         ui->inputLineEdit->clear();
         ui->expressionTypeLabel->clear();
         ui->statusbar->clearMessage();
+        emit changeDataLoaded(false);
+        changeWindowTitle("");
+        closeOpenedFile();
     }
 }
 
@@ -300,7 +320,7 @@ void MainWindow::onTabChanged(int index)
     Tab* tab = qobject_cast<Tab*>(widget);
     int type = tab->getExpressionType();
 
-    qDebug()<<"tab changed, type: "<<type;
+    //qDebug()<<"tab changed, type: "<<type;
 
     if (type == 0) {
         ui->expressionTypeLabel->setText("Тип виразу: тавтологія");
@@ -456,7 +476,7 @@ int MainWindow::findTabIndexByName(QTabWidget *tabWidget, const QString &tabName
 void MainWindow::build(QString expression)
 {
     QDateTime startTime = QDateTime::currentDateTime();
-    qDebug()<<startTime;
+    //qDebug()<<startTime;
 
     int findIndex = findTabIndexByName(ui->tabWidget, expression);
     if (findIndex!=-1) {
@@ -483,7 +503,7 @@ void MainWindow::build(QString expression)
     ui->stackedWidget->setCurrentIndex(1);
 
     QDateTime endTime = QDateTime::currentDateTime();
-    qDebug()<<endTime;
+    //qDebug()<<endTime;
     qint64 elapsedMs = startTime.msecsTo(endTime);
 
     int totalSeconds = elapsedMs / 1000;
@@ -498,33 +518,39 @@ void MainWindow::build(QString expression)
     _tab->setExecutionTime(formattedTime);
     ui->statusbar->showMessage("Час виконання: " + formattedTime);
 
-    qDebug()<<formattedTime;
+    ui->action->setEnabled(true);
+    ui->action_Excel->setEnabled(true);
+    //qDebug()<<formattedTime;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     settings->saveWindowGeometry(saveGeometry());
 
-    if (fileManager->isOpenedTableModified())
+    if (fileManager->isFileDataLoaded())
     {
-        QMessageBox::StandardButton reply = QMessageBox::question(
-            this,
-            tr("Save Changes"),
-            tr("The tabs have been modified. Do you want to save your changes?"),
-            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
-            );
+        if (fileManager->isOpenedTableModified())
+        {
+            QMessageBox::StandardButton reply = QMessageBox::question(
+                this,
+                tr("Генератор таблиць істиннсті"),
+                tr("Дані у файлі було змінено. Бажаєте зберігти зміни?"),
+                QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
+                );
 
-        if (reply == QMessageBox::Yes) {
-            fileManager->save();
-            QMainWindow::closeEvent(event);
-        } else if (reply == QMessageBox::No) {
-            event->accept();
-            QMainWindow::closeEvent(event);
-        } else if (reply == QMessageBox::Cancel) {
-            event->ignore();
-            return;
+            if (reply == QMessageBox::Yes) {
+                fileManager->save();
+                QMainWindow::closeEvent(event);
+            } else if (reply == QMessageBox::No) {
+                event->accept();
+                QMainWindow::closeEvent(event);
+            } else if (reply == QMessageBox::Cancel) {
+                event->ignore();
+                return;
+            }
         }
-    } else {
+    }
+    else {
         QMainWindow::closeEvent(event);
     }
 }
@@ -559,6 +585,36 @@ void MainWindow::setStatusBarText(QString text)
 void MainWindow::changeWindowTitle(QString newTitle)
 {
     this->setWindowTitle("Генератор таблиць істинності " + newTitle);
+}
+
+void MainWindow::changeSaveAction(bool value)
+{
+    ui->action->setEnabled(value);
+    ui->action_5->setEnabled(value);
+    ui->action_8->setEnabled(value);
+    ui->action_Excel->setEnabled(value);
+}
+
+void MainWindow::closeOpenedFile()
+{
+    qDebug()<<"closing file";
+    int tabCount = ui->tabWidget->count();
+    for (int i = tabCount - 1; i >= 0; --i) {
+        QWidget* widget = ui->tabWidget->widget(i);
+        if (!widget)
+            break;
+        ui->tabWidget->removeTab(i);
+        widget->deleteLater();
+    }
+    emit changeDataLoaded(false);
+
+    ui->stackedWidget->setCurrentIndex(0);
+    ui->statusbar->clearMessage();
+    changeWindowTitle("");
+    //changeSaveAction(false);
+
+    changeSaveAction(false);
+
 }
 
 

@@ -43,10 +43,12 @@ private slots:
     void setStatusBarText(QString text);
 
     void changeWindowTitle(QString newTitle);
+    void changeSaveAction(bool value);
 
+    void closeOpenedFile();
 signals:
     void changeCellHoverColorSignal(QColor);
-
+    void changeDataLoaded(bool);
 private:
     Ui::MainWindow *ui;
 

@@ -26,10 +26,15 @@ public:
     bool load();
 
     bool isOpenedTableModified();
+    bool isFileDataLoaded();
 
 signals:
     void sendExpressionFromFile(QString);
     void sendNewTitle(QString);
+    void changeActionStatus(bool);
+    void clearAllTabs();
+public slots:
+    void changeDataLoaded(bool value);
 
 private:
     QTabWidget* m_tabWidget;
@@ -40,6 +45,8 @@ private:
     QString fileName;
 
     QString getFileName(QString filePath);
+
+    bool dataLoaded;
 
 };
 
