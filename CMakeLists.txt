@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(cursova LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets LinguistTools Concurrent)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets LinguistTools Concurrent AxContainer)
 
 qt_standard_project_setup()
 
@@ -24,6 +24,8 @@ qt_add_executable(cursova
 
     TruthTableBuilder/truthtablebuilder.h TruthTableBuilder/truthtablebuilder.cpp
     FileManager/filemanager.h FileManager/filemanager.cpp
+    ExcelExporter/excelexporter.h ExcelExporter/excelexporter.cpp
+    ThemeManager/thememanager.h ThemeManager/thememanager.cpp
 
 )
 
@@ -36,6 +38,7 @@ target_link_libraries(cursova
     PRIVATE
         Qt::Core
         Qt::Widgets
+        Qt6::AxContainer
 )
 
 include(GNUInstallDirs)

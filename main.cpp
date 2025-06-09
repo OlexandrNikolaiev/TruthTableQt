@@ -21,7 +21,9 @@ int main(int argc, char *argv[])
     QString openSansSemiBold = ":/fonts/fonts/OpenSans-SemiBold.ttf";
     QFontDatabase::addApplicationFont(openSansSemiBold);
 
+
     MainWindow w;
+    a.setStyleSheet("QPushButton{color:red;};");
     w.show();
 
     return a.exec();

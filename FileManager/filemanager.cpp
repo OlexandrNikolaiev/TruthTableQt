@@ -70,6 +70,11 @@ bool FileManager::save()
 
 bool FileManager::load()
 {
+    //Inexplicable but TRUE! Without this comment, there's very strange behavior:
+    //if you open the program and immediately enter an expression, then move the window,
+    //when trying to close the main window, you'll get a prompt about unsaved changes — even though
+    //there shouldn't be any. With this debug line, the issue doesn't occur.
+    //qDebug()<<"loading";
     QFile file(currentFilePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Could not open file for reading:" << currentFilePath;
@@ -111,11 +116,13 @@ bool FileManager::isOpenedTableModified()
 
 bool FileManager::isFileDataLoaded()
 {
+    qDebug()<<"value = "<<dataLoaded;
     return dataLoaded;
 }
 
 void FileManager::changeDataLoaded(bool value)
 {
+    qDebug()<<"value = "<<value;
     dataLoaded = value;
 }
 

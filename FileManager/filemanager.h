@@ -46,7 +46,7 @@ private:
 
     QString getFileName(QString filePath);
 
-    bool dataLoaded;
+    bool dataLoaded = false;
 
 };
 

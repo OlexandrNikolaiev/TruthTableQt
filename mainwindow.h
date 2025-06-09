@@ -7,10 +7,12 @@
 #include <QActionGroup>
 #include <QScopedPointer>
 #include <QGraphicsDropShadowEffect>
+#include <QFileDialog>
 
 #include "TruthTableTab/truthtabletab.h"
 #include "IniManager/SettingsManager/settingsmanager.h"
 #include "FileManager/filemanager.h"
+#include "ExcelExporter/excelexporter.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -46,11 +48,14 @@ private slots:
     void changeSaveAction(bool value);
 
     void closeOpenedFile();
+
+    void exportToExcel();
 signals:
     void changeCellHoverColorSignal(QColor);
     void changeDataLoaded(bool);
 private:
     Ui::MainWindow *ui;
+    QLabel* executionTimeLabel;
 
     SettingsManager* settings;
 

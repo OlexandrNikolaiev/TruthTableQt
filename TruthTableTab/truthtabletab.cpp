@@ -149,7 +149,11 @@ void Tab::clearRowHighlight(int row)
     int cols = ui->truthTable->columnCount();
     for (int j = 0; j < cols; ++j) {
         if (auto item = ui->truthTable->item(row, j))
-            item->setBackground(Qt::white);
+        {
+
+            item->setBackground(QBrush(QColor(23, 33, 43)));
+            item->setForeground(QBrush(QColor(87, 98, 109)));
+        }
     }
 }
 
@@ -199,7 +203,7 @@ void Tab::on_truthTable_cellEntered(int row, int column) {
         int idx = column - varCount;
         for (int childCol : childDeps[idx]) {
             if (auto item = ui->truthTable->item(row, childCol))
-                item->setBackground(currentCellHoverColor);
+                item->setBackground(QBrush(QColor(currentCellHoverColor)));
         }
     }
 
@@ -216,6 +220,7 @@ void Tab::on_truthTable_cellEntered(int row, int column) {
         } else {
             emit statusMessageRequested("Підвираз: " + header); // nikogda ne rabotaet
         }
+
     }
 }
 

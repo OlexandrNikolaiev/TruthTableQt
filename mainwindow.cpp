@@ -184,6 +184,12 @@ MainWindow::MainWindow(QWidget *parent)
     changeSaveAction(false);
 
     connect(ui->closeProgramAction, &QAction::triggered, this, &MainWindow::close);
+
+    executionTimeLabel = new QLabel(this);
+    ui->statusbar->addWidget(executionTimeLabel);
+
+    connect(ui->action_Excel, &QAction::triggered, this, &MainWindow::exportToExcel);
+
 }
 
 MainWindow::~MainWindow()
@@ -333,7 +339,9 @@ void MainWindow::onTabChanged(int index)
         ui->expressionTypeLabel->setStyleSheet("color: black;");
     }
 
-    ui->statusbar->showMessage("Час виконання: " + tab->getExectuionTime());
+    executionTimeLabel->setText("Час виконання: " + tab->getExectuionTime() + " с  ");
+
+    //ui->statusbar->showMessage("Час виконання: " + tab->getExectuionTime());
 }
 
 void MainWindow::loadSettings()
@@ -507,16 +515,19 @@ void MainWindow::build(QString expression)
     qint64 elapsedMs = startTime.msecsTo(endTime);
 
     int totalSeconds = elapsedMs / 1000;
-    int minutes = totalSeconds / 60;
-    int seconds = totalSeconds % 60;
+    //int minutes = elapsedMs / 60000;
+    int seconds = (elapsedMs % 60000) / 1000;
+    int milliseconds = elapsedMs % 1000;
 
     QString formattedTime = QString("%1:%2")
-                                .arg(minutes, 2, 10, QChar('0'))
-                                .arg(seconds, 2, 10, QChar('0'));
+                                //.arg(minutes, 2, 10, QChar('0'))
+                                .arg(seconds, 2, 10, QChar('0'))
+                                .arg(milliseconds, 3, 10, QChar('0'));
+
 
 
     _tab->setExecutionTime(formattedTime);
-    ui->statusbar->showMessage("Час виконання: " + formattedTime);
+    executionTimeLabel->setText("Час виконання: " + formattedTime + " с");
 
     ui->action->setEnabled(true);
     ui->action_Excel->setEnabled(true);
@@ -525,10 +536,14 @@ void MainWindow::build(QString expression)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    qDebug()<<"isFileDataLoaded: " << fileManager->isFileDataLoaded();
+    qDebug()<<"table modified: "<<fileManager->isOpenedTableModified();
     settings->saveWindowGeometry(saveGeometry());
+
 
     if (fileManager->isFileDataLoaded())
     {
+
         if (fileManager->isOpenedTableModified())
         {
             QMessageBox::StandardButton reply = QMessageBox::question(
@@ -615,6 +630,35 @@ void MainWindow::closeOpenedFile()
 
     changeSaveAction(false);
 
+}
+
+void MainWindow::exportToExcel()
+{
+    QWidget* currentPage = ui->stackedWidget->currentWidget();
+    QString title = ui->inputLineEdit->text().trimmed();
+
+    QTabWidget* tabWidget = currentPage->findChild<QTabWidget*>("tabWidget");
+    if (!tabWidget) return;
+    QWidget* currentTab = tabWidget->currentWidget();
+    QTableWidget* table = currentTab->findChild<QTableWidget*>("truthTable");
+    if (!table) return;
+
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        tr("Експортувати в Excel"),
+        QString(),
+        tr("Excel файли (*.xlsx *.xls)")
+        );
+    if (filePath.isEmpty())
+        return;
+
+    ExcelExporter exporter;
+    QString error;
+    if (!exporter.exportToExcel(table, filePath, title, &error)) {
+        QMessageBox::warning(this, tr("Помилка"), error);
+    } else {
+        QMessageBox::information(this, tr("Успіх"), tr("Експорт успішно завершено"));
+    }
 }
 
 
