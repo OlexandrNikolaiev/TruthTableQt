@@ -28,6 +28,9 @@ public:
     bool isOpenedTableModified();
     bool isFileDataLoaded();
 
+    QString getFileName();
+
+
 signals:
     void sendExpressionFromFile(QString);
     void sendNewTitle(QString);
@@ -44,7 +47,6 @@ private:
     QString currentFilePath = "";
     QString fileName;
 
-    QString getFileName(QString filePath);
 
     bool dataLoaded = false;
 

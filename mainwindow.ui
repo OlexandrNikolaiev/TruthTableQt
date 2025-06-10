@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>1086</width>
-    <height>818</height>
+    <height>995</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Генератор таблиць істинності</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_4">
@@ -49,7 +49,7 @@
        <item row="1" column="0">
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_10">
@@ -193,7 +193,7 @@
                        </font>
                       </property>
                       <property name="text">
-                       <string>yasfhekfewf</string>
+                       <string/>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -222,16 +222,13 @@
                    </property>
                    <layout class="QHBoxLayout" name="horizontalLayout_3">
                     <item>
-                     <spacer name="horizontalSpacer_8">
+                     <spacer name="horizontalSpacer_9">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
-                      <property name="sizeType">
-                       <enum>QSizePolicy::Fixed</enum>
-                      </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>422</width>
+                        <width>40</width>
                         <height>20</height>
                        </size>
                       </property>
@@ -256,6 +253,9 @@
                         <family>Open Sans</family>
                        </font>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
                       <property name="text">
                        <string/>
                       </property>
@@ -269,6 +269,22 @@
                        <bool>true</bool>
                       </property>
                      </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_8">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Fixed</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
                     </item>
                     <item>
                      <widget class="QLabel" name="welcomeLabel_3">
@@ -283,6 +299,9 @@
                         <family>Open Sans</family>
                        </font>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
                       <property name="text">
                        <string/>
                       </property>
@@ -298,16 +317,13 @@
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_9">
+                     <spacer name="horizontalSpacer_10">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
-                      <property name="sizeType">
-                       <enum>QSizePolicy::Fixed</enum>
-                      </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>422</width>
+                        <width>40</width>
                         <height>20</height>
                        </size>
                       </property>
@@ -544,6 +560,9 @@ QLineEdit {
                  <property name="cursor">
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
+                 <property name="toolTip">
+                  <string>Зтерти один символ</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">
 border:none;
@@ -700,6 +719,9 @@ QPushButton:hover
                  <strikeout>false</strikeout>
                 </font>
                </property>
+               <property name="toolTip">
+                <string>Заперечення</string>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
    background-color: rgb(240,240,240);
@@ -749,6 +771,9 @@ QPushButton:pressed {
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
+               </property>
+               <property name="toolTip">
+                <string>Диз'юнкція</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -800,6 +825,9 @@ QPushButton:pressed {
                  <strikeout>false</strikeout>
                 </font>
                </property>
+               <property name="toolTip">
+                <string>Кон'юнкція</string>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
    background-color: rgb(240,240,240);
@@ -849,6 +877,9 @@ QPushButton:pressed {
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
+               </property>
+               <property name="toolTip">
+                <string>Еквіваленція</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -911,6 +942,9 @@ QPushButton:pressed {
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
+               </property>
+               <property name="toolTip">
+                <string>Імплікація</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -988,21 +1022,13 @@ QPushButton:pressed {
      <property name="title">
       <string>Мова</string>
      </property>
-     <addaction name="action_4"/>
+     <addaction name="actionUkrainian"/>
      <addaction name="actionEnglish"/>
-    </widget>
-    <widget class="QMenu" name="menu_5">
-     <property name="title">
-      <string>Тема</string>
-     </property>
-     <addaction name="action_6"/>
-     <addaction name="action_7"/>
     </widget>
     <addaction name="separator"/>
     <addaction name="action_showAuxButtons"/>
     <addaction name="menu"/>
     <addaction name="menu_4"/>
-    <addaction name="menu_5"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -1066,7 +1092,7 @@ QPushButton:pressed {
   </action>
   <action name="action">
    <property name="text">
-    <string>Зберегти як</string>
+    <string>Зберегти як...</string>
    </property>
   </action>
   <action name="action_Excel">
@@ -1079,12 +1105,18 @@ QPushButton:pressed {
     <string>Вийти з програми</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="actionUkrainian">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Українська</string>
    </property>
   </action>
   <action name="actionEnglish">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>English</string>
    </property>
@@ -1101,7 +1133,7 @@ QPushButton:pressed {
   </action>
   <action name="action_3">
    <property name="text">
-    <string>Відкрити</string>
+    <string>Відкрити...</string>
    </property>
   </action>
   <action name="action_5">

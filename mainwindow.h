@@ -8,7 +8,7 @@
 #include <QScopedPointer>
 #include <QGraphicsDropShadowEffect>
 #include <QFileDialog>
-
+#include <QTranslator>
 #include "TruthTableTab/truthtabletab.h"
 #include "IniManager/SettingsManager/settingsmanager.h"
 #include "FileManager/filemanager.h"
@@ -31,6 +31,7 @@ public:
 private slots:
     void on_auxiliaryButton_clicked();
     void onMenuActionTriggered(bool checked);
+    void onLanguageActionTriggered(bool checked);
 
     void on_buildButton_clicked();
 
@@ -55,9 +56,18 @@ signals:
     void changeDataLoaded(bool);
 private:
     Ui::MainWindow *ui;
+
+    QTranslator* translator;
+    bool isUkrainian;
+    void switchLanguage();
+    void changeEvent(QEvent *event);
+    //  void retranslateUi();
+
     QLabel* executionTimeLabel;
 
     SettingsManager* settings;
+
+    QActionGroup* languageGroup;
 
     QColor currentCellHoverColor;
     QActionGroup* colorGroup;

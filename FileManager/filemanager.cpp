@@ -15,7 +15,7 @@ bool FileManager::saveWithDialog()
     QWidget* parent = m_tabWidget->parentWidget();
     QString filter = "Builder Files (*.builder)";
     currentFilePath = QFileDialog::getSaveFileName(parent,
-                                                    tr("Save Tabs"),
+                                                    tr("Зберегти файл"),
                                                     QString(), filter);
     if (currentFilePath.isEmpty())
         return false;
@@ -32,13 +32,12 @@ bool FileManager::loadWithDialog()
     QWidget* parent = m_tabWidget->parentWidget();
     QString filter = "Builder Files (*.builder)";
     currentFilePath = QFileDialog::getOpenFileName(parent,
-                                                    tr("Open Tabs"),
+                                                    tr("Відкрити файл"),
                                                     QString(), filter);
 
 
     if (currentFilePath.isEmpty())
         return false;
-
 
 
     return load();
@@ -70,24 +69,21 @@ bool FileManager::save()
 
 bool FileManager::load()
 {
-    //Inexplicable but TRUE! Without this comment, there's very strange behavior:
-    //if you open the program and immediately enter an expression, then move the window,
-    //when trying to close the main window, you'll get a prompt about unsaved changes — even though
-    //there shouldn't be any. With this debug line, the issue doesn't occur.
-    //qDebug()<<"loading";
+
+    emit clearAllTabs();
+
     QFile file(currentFilePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Could not open file for reading:" << currentFilePath;
         return false;
     }
 
-    emit sendNewTitle("| Відкрито: " + getFileName(currentFilePath));
+    emit sendNewTitle(tr("| Відкрито: ") + getFileName());
     emit changeActionStatus(true);
 
     // Clear existing tabs
     _lastSavedTabs.clear();
 
-    //emit clearAllTabs();
 
     QTextStream in(&file);
     while (!in.atEnd()) {
@@ -136,7 +132,7 @@ QStringList FileManager::getCurrentTabs()
     return list;
 }
 
-QString FileManager::getFileName(QString filePath)
+QString FileManager::getFileName()
 {
     QFileInfo fileInfo(currentFilePath);
     return fileInfo.fileName();

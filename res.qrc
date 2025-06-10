@@ -9,4 +9,5 @@
         <file>icons/builder.png</file>
         <file>icons/calculator.png</file>
     </qresource>
+    <qresource prefix="/i18n"/>
 </RCC>

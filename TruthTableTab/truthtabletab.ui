@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>957</width>
-    <height>576</height>
+    <width>708</width>
+    <height>506</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -28,6 +34,12 @@
    </property>
    <item row="0" column="0">
     <widget class="QTableWidget" name="truthTable">
+     <property name="minimumSize">
+      <size>
+       <width>1</width>
+       <height>1</height>
+      </size>
+     </property>
      <property name="font">
       <font>
        <family>Open Sans SemiBold</family>
@@ -38,44 +50,7 @@
       <bool>true</bool>
      </property>
      <property name="styleSheet">
-      <string notr="true">QTableWidget, QTableView {
-    background-color: #2b2b2b;
-    alternate-background-color: #333333;
-    color: #ffffff;
-    gridline-color: #444444;
-    selection-background-color: #3d5afe;
-    selection-color: #ffffff;
-    border: none;
-}
-
-QHeaderView::section {
-    background-color: #424242;
-    color: #ffffff;
-    padding: 4px;
-    border: 1px solid #2c2c2c;
-    font-weight: bold;
-}
-
-/* ??????? ?????? (??????????? ??????????) */
-QTableCornerButton::section {
-    background-color: #2b2b2b;
-    border: none;
-}
-
-/* Viewport ? ???????????? ??? ????? */
-QTableView::viewport {
-    background-color: #2b2b2b;
-}
-
-/* ??? ??????-???????? */
-QAbstractScrollArea {
-    background-color: #2b2b2b;
-}
-
-/* ???????????? ? ?????????????? ????????? */
-QScrollBar:vertical, QScrollBar:horizontal {
-    background: #2b2b2b;
-}</string>
+      <string notr="true"/>
      </property>
     </widget>
    </item>

@@ -54,13 +54,7 @@ private:
 
     void determineExpressionType();
 
-    const QMap<QChar, QString> operatorNames = {
-        {QChar(0x00AC), "заперечення"},
-        {QChar(0x2227), "кон'юнкція"},
-        {QChar(0x2228), "диз'юнкція"},
-        {QChar(0x21D2), "імплікація"},
-        {QChar(0x21D4), "еквіваленція"}
-    };
+
 
     QString executionTime;
 

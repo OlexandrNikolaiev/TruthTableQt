@@ -1,5 +1,8 @@
 #include <QApplication>
 #include <QFontDatabase>
+#include <QLocale>
+#include <QTranslator>
+
 #include "mainwindow.h"
 
 void registerFileAssociation()
@@ -16,14 +19,26 @@ void registerFileAssociation()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QTranslator translator;
+    const QStringList uiLanguages = QLocale::system().uiLanguages();
+    for (const QString &locale : uiLanguages) {
+        const QString baseName = "cursova_" + QLocale(locale).name();
+        if (translator.load(":/i18n/" + baseName)) {
+            qDebug()<<"123";
+            a.installTranslator(&translator);
+            break;
+        }
+    }
+
     registerFileAssociation();
 
     QString openSansSemiBold = ":/fonts/fonts/OpenSans-SemiBold.ttf";
     QFontDatabase::addApplicationFont(openSansSemiBold);
 
-
     MainWindow w;
-    a.setStyleSheet("QPushButton{color:red;};");
+
+
     w.show();
 
     return a.exec();

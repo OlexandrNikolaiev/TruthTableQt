@@ -10,10 +10,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    translator = new QTranslator(this);
     settings = new SettingsManager("settings.ini");
 
-    this->setWindowTitle("Генератор таблиць істинності");
-    ui->inputLineEdit->setPlaceholderText("Введіть логічний вираз...");
+    this->setWindowTitle(tr("Конструктор таблиць істинності"));
+
+    ui->inputLineEdit->setPlaceholderText(tr("Введіть логічний вираз..."));
     ui->inputLineEdit->setFocus();
 
     connect(ui->inputLineEdit,   &QLineEdit::returnPressed,   this, &MainWindow::on_buildButton_clicked);
@@ -33,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
         shadow->setColor(QColor(0,0,0,150));
         return shadow;
     };
+
+
 
     ui->frame_2->setGraphicsEffect(makeShadow());
     ui->calculateButton->setGraphicsEffect(makeShadow());
@@ -98,6 +102,18 @@ MainWindow::MainWindow(QWidget *parent)
     tabBar->setFont(font);
     ui->statusbar->setFont(font);
 
+    languageGroup = new QActionGroup(this);
+    languageGroup->addAction(ui->actionEnglish);
+    languageGroup->addAction(ui->actionUkrainian);
+    languageGroup->setExclusive(true);
+
+    connect(ui->actionEnglish, &QAction::triggered, this, &MainWindow::onLanguageActionTriggered);
+    connect(ui->actionUkrainian, &QAction::triggered, this, &MainWindow::onLanguageActionTriggered);
+
+
+
+
+
     connect(ui->action_showAuxButtons, &QAction::toggled, this, &MainWindow::onMenuActionTriggered);
     connect(ui->action_green, &QAction::triggered, this, &MainWindow::onMenuActionTriggered);
     connect(ui->action_grey, &QAction::triggered, this, &MainWindow::onMenuActionTriggered);
@@ -113,50 +129,50 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onTabChanged);
 
     ui->stackedWidget->setCurrentIndex(0);
-    loadSettings();
 
     ui->welcomeLabel->setText(
-        "<h1 style='text-align: center;'>Ласкаво просимо до Генератора таблиць істинності!</h1>"
-        "<p style='text-align: center;'>Цей інструмент дозволяє швидко створювати таблиці істинності для логічних виразів. "
-        "Вводьте вирази, будуйте таблиці та аналізуйте результати!</p>"
-
-        "<h2 style='text-align: center;'>Як почати?</h2>"
-        "<p style='text-align: center;'>"
-        "1. &nbsp;Введіть логічний вираз у поле 'Введіть логічний вираз...' у верхній частині вікна.<br>"
-        "2. &nbsp;Натисніть кнопку 'Побудувати' або клавішу Enter, щоб згенерувати таблицю істинності."
-        "</p>"
-
-        "<h2 style='text-align: center;'>Бажаєте вдосконалити програму?</h2> "
-        "<p style='text-align: center;'>"
-        "<a href='https://github.com/OlexandrNikolaiev/TruthTableQt'>Відкритий код проєкту</a>"
-        ""
+        tr("<h1 style='text-align: center;'>Ласкаво просимо до Конструктора таблиць істинності!</h1>"
+           "<p style='text-align: center;'>Цей інструмент дозволяє швидко створювати таблиці істинності для логічних виразів. "
+           "Вводьте вирази, будуйте таблиці та аналізуйте результати!</p>"
+           "<h2 style='text-align: center;'>Як почати?</h2>"
+           "<p style='text-align: center;'>"
+           "1.  Введіть логічний вираз у поле 'Введіть логічний вираз...' у верхній частині вікна.<br>"
+           "2.  Натисніть кнопку 'Побудувати' або клавішу Enter, щоб побудувати таблицю істинності."
+           "</p>"
+           "<h2 style='text-align: center;'>Бажаєте вдосконалити програму?</h2> "
+           "<p style='text-align: center;'>"
+           "<a href='https://github.com/OlexandrNikolaiev/TruthTableQt'>Відкритий код проєкту</a>"
+           "</p>")
         );
 
+
     ui->welcomeLabel_2->setText(
-        "<h2 style='text-align: left;'>Приклади виразів</h2>"
-        "<p style='text-align: left;'>"
-        "1. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>A ∧ B</span> — кон'юнкція A та B."
-        "</p>"
-        "<p style='text-align: left;'>"
-        "2. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>¬(A ∨ B)</span> — заперечення диз'юнкції A та B."
-        "</p>"
-        "<p style='text-align: left;'>"
-        "3. &nbsp;&nbsp;<span style='font-size: 20px; font-weight: bold;'>(A ⇒ B) ⇔ (¬A ∨ B)</span> — еквіваленція імплікації та її розкладення."
-        "</p> <br><br><br>");
+        tr("<h2 style='text-align: left;'>Приклади виразів</h2>"
+           "<p style='text-align: left;'>"
+           "1.   <span style='font-size: 20px; font-weight: bold;'>A ∧ B</span> — кон'юнкція A та B."
+           "</p>"
+           "<p style='text-align: left;'>"
+           "2.   <span style='font-size: 20px; font-weight: bold;'>¬(A ∨ B)</span> — заперечення диз'юнкції A та B."
+           "</p>"
+           "<p style='text-align: left;'>"
+           "3.   <span style='font-size: 20px; font-weight: bold;'>(A ⇒ B) ⇔ (¬A ∨ B)</span> — еквіваленція імплікації та її розкладення."
+           "</p> <br><br><br>")
+        );
 
     ui->welcomeLabel_3->setText(
-        "<h2 style='text-align: right;'>Гарячі клавіші</h2>"
-        "<p style='text-align: right; line-height: 0.7;'>"
-        "<span style='font-size: 20px; font-weight: bold;'>'>'</span> — Імплікація.</p>"
-        "<p style='text-align: right; line-height: 0.7;'>"
-        "<span style='font-size: 20px; font-weight: bold;'>'='</span> — Еквіваленція.</p>"
-        "<p style='text-align: right; line-height: 0.7;'>"
-        "<span style='font-size: 20px; font-weight: bold;'>Shift + '*'</span> — Кон'юнкція.</p>"
-        "<p style='text-align: right; line-height: 0.7;'>"
-        "<span style='font-size: 20px; font-weight: bold;'>Shift + '+'</span> — Диз'юнкція.</p>"
-        "<p style='text-align: right; line-height: 0.7;'>"
-        "<span style='font-size: 20px; font-weight: bold;'>Shift + '!'</span> — Заперечення.</p>"
-        "<br><br>");
+        tr("<h2 style='text-align: right;'>Гарячі клавіші</h2>"
+           "<p style='text-align: right; line-height: 0.7;'>"
+           "<span style='font-size: 20px; font-weight: bold;'>'>'</span> — Імплікація.</p>"
+           "<p style='text-align: right; line-height: 0.7;'>"
+           "<span style='font-size: 20px; font-weight: bold;'>'='</span> — Еквіваленція.</p>"
+           "<p style='text-align: right; line-height: 0.7;'>"
+           "<span style='font-size: 20px; font-weight: bold;'>Shift + '*'</span> — Кон'юнкція.</p>"
+           "<p style='text-align: right; line-height: 0.7;'>"
+           "<span style='font-size: 20px; font-weight: bold;'>Shift + '+'</span> — Диз'юнкція.</p>"
+           "<p style='text-align: right; line-height: 0.7;'>"
+           "<span style='font-size: 20px; font-weight: bold;'>Shift + '!'</span> — Заперечення.</p>"
+           "<br><br>")
+        );
 
     QString imagePath = QCoreApplication::applicationDirPath() + "/builder.png";
     QPixmap pixmap(imagePath);
@@ -186,10 +202,23 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->closeProgramAction, &QAction::triggered, this, &MainWindow::close);
 
     executionTimeLabel = new QLabel(this);
+    executionTimeLabel->setStyleSheet("padding-left: 7px; padding-right: 10px;");
+    executionTimeLabel->setFont(font);
+
     ui->statusbar->addWidget(executionTimeLabel);
+
 
     connect(ui->action_Excel, &QAction::triggered, this, &MainWindow::exportToExcel);
 
+
+    int labelWidth = ui->welcomeLabel->width();
+    ui->horizontalSpacer_8->changeSize(labelWidth+138, 0, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+
+    ui->horizontalLayout->invalidate();
+    ui->horizontalLayout->update();
+
+    loadSettings();
 }
 
 MainWindow::~MainWindow()
@@ -287,6 +316,34 @@ void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
     }
 }
 
+void MainWindow::onLanguageActionTriggered(bool checked)
+{
+    QAction *senderAction = qobject_cast<QAction*>(sender());
+    if (!senderAction) return;
+
+    if (senderAction == ui->actionEnglish && isUkrainian) {
+        if (translator->load("cursova_en_GB.qm")) {
+            qApp->installTranslator(translator);
+            isUkrainian = false;
+            settings->saveLanguage("English");
+            qDebug()<<"saving english";
+        } else {
+            qDebug() << "Failed to load translation file.";
+        }
+        QEvent languageChangeEvent(QEvent::LanguageChange);
+        QApplication::sendEvent(this, &languageChangeEvent);
+    }
+
+    if (senderAction == ui->actionUkrainian && !isUkrainian) {
+        qApp->removeTranslator(translator);
+        isUkrainian = true;
+        settings->saveLanguage("Ukrainian");
+        qDebug()<<"saving ukrainian";
+        QEvent languageChangeEvent(QEvent::LanguageChange);
+        QApplication::sendEvent(this, &languageChangeEvent);
+    }
+}
+
 void MainWindow::on_buildButton_clicked() //переробити час виконання коли буде зроблений многопоток
 {
     QString expression = ui->inputLineEdit->text().trimmed();
@@ -308,7 +365,8 @@ void MainWindow::closeTab(int tabNumber)
         ui->stackedWidget->setCurrentIndex(0);
         ui->inputLineEdit->clear();
         ui->expressionTypeLabel->clear();
-        ui->statusbar->clearMessage();
+        executionTimeLabel->clear();
+        //ui->statusbar->clearMessage();
         emit changeDataLoaded(false);
         changeWindowTitle("");
         closeOpenedFile();
@@ -329,18 +387,17 @@ void MainWindow::onTabChanged(int index)
     //qDebug()<<"tab changed, type: "<<type;
 
     if (type == 0) {
-        ui->expressionTypeLabel->setText("Тип виразу: тавтологія");
+        ui->expressionTypeLabel->setText(tr("Тип виразу: тавтологія"));
         ui->expressionTypeLabel->setStyleSheet("color: green;");
     } else if(type == 1) {
-        ui->expressionTypeLabel->setText("Тип виразу: протиріччя");
+        ui->expressionTypeLabel->setText(tr("Тип виразу: протиріччя"));
         ui->expressionTypeLabel->setStyleSheet("color: red;");
     } else {
-        ui->expressionTypeLabel->setText("Тип виразу: нейтральний (виконуваний)");
+        ui->expressionTypeLabel->setText(tr("Тип виразу: нейтральний (виконуваний)"));
         ui->expressionTypeLabel->setStyleSheet("color: black;");
     }
 
-    executionTimeLabel->setText("Час виконання: " + tab->getExectuionTime() + " с  ");
-
+    executionTimeLabel->setText(tr("Час виконання: ") + tab->getExectuionTime() + tr(" с"));
     //ui->statusbar->showMessage("Час виконання: " + tab->getExectuionTime());
 }
 
@@ -378,12 +435,22 @@ void MainWindow::loadSettings()
         ui->action_grey->setChecked(false);
         ui->action_yellow->setChecked(false);
     }
+
+    QString currentLanguage = settings->loadLanguage();
+    qDebug()<<"loaded currentLanguge: "<<currentLanguage;
+    if (currentLanguage=="Ukrainian") {
+        ui->actionUkrainian->setChecked(true);
+        ui->actionUkrainian->trigger();
+    } else {
+        ui->actionEnglish->setChecked(true);
+        ui->actionEnglish->trigger();
+    }
 }
 
 QString MainWindow::validateExpression(const QString &expr) const
 {
     if (expr.isEmpty()) {
-        return QString("Вираз не може бути порожнім.");
+        return QString(tr("Вираз не може бути порожнім."));
     }
 
     QString allowedOperators = "!*+>=∨¬∧⇒⇔";
@@ -494,7 +561,7 @@ void MainWindow::build(QString expression)
 
     QString error = validateExpression(expression);
     if (!error.isEmpty()){
-        QMessageBox::warning(this, "Помилка", error);
+        QMessageBox::warning(this, tr("Помилка"), error);
         return;
     }
 
@@ -527,7 +594,7 @@ void MainWindow::build(QString expression)
 
 
     _tab->setExecutionTime(formattedTime);
-    executionTimeLabel->setText("Час виконання: " + formattedTime + " с");
+    executionTimeLabel->setText(tr("Час виконання: ") + formattedTime + tr(" с"));
 
     ui->action->setEnabled(true);
     ui->action_Excel->setEnabled(true);
@@ -548,7 +615,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         {
             QMessageBox::StandardButton reply = QMessageBox::question(
                 this,
-                tr("Генератор таблиць істиннсті"),
+                tr("Конструктор таблиць істинності"),
                 tr("Дані у файлі було змінено. Бажаєте зберігти зміни?"),
                 QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
                 );
@@ -569,7 +636,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         QMainWindow::closeEvent(event);
     }
 }
-
 
 void MainWindow::setExpressionType(int type)
 {
@@ -599,7 +665,7 @@ void MainWindow::setStatusBarText(QString text)
 
 void MainWindow::changeWindowTitle(QString newTitle)
 {
-    this->setWindowTitle("Генератор таблиць істинності " + newTitle);
+    this->setWindowTitle(tr("Конструктор таблиць істинності ") + newTitle);
 }
 
 void MainWindow::changeSaveAction(bool value)
@@ -661,4 +727,77 @@ void MainWindow::exportToExcel()
     }
 }
 
+void MainWindow::switchLanguage()
+{
+
+}
+
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
+        ui->inputLineEdit->setPlaceholderText(tr("Введіть логічний вираз..."));
+        ui->welcomeLabel->setText(
+            tr("<h1 style='text-align: center;'>Ласкаво просимо до Конструктора таблиць істинності!</h1>"
+               "<p style='text-align: center;'>Цей інструмент дозволяє швидко створювати таблиці істинності для логічних виразів. "
+               "Вводьте вирази, будуйте таблиці та аналізуйте результати!</p>"
+               "<h2 style='text-align: center;'>Як почати?</h2>"
+               "<p style='text-align: center;'>"
+               "1.  Введіть логічний вираз у поле 'Введіть логічний вираз...' у верхній частині вікна.<br>"
+               "2.  Натисніть кнопку 'Побудувати' або клавішу Enter, щоб побудувати таблицю істинності."
+               "</p>"
+               "<h2 style='text-align: center;'>Бажаєте вдосконалити програму?</h2> "
+               "<p style='text-align: center;'>"
+               "<a href='https://github.com/OlexandrNikolaiev/TruthTableQt'>Відкритий код проєкту</a>"
+               "</p>")
+            );
+
+        ui->welcomeLabel_2->setText(
+            tr("<h2 style='text-align: left;'>Приклади виразів</h2>"
+               "<p style='text-align: left;'>"
+               "1.   <span style='font-size: 20px; font-weight: bold;'>A ∧ B</span> — кон'юнкція A та B."
+               "</p>"
+               "<p style='text-align: left;'>"
+               "2.   <span style='font-size: 20px; font-weight: bold;'>¬(A ∨ B)</span> — заперечення диз'юнкції A та B."
+               "</p>"
+               "<p style='text-align: left;'>"
+               "3.   <span style='font-size: 20px; font-weight: bold;'>(A ⇒ B) ⇔ (¬A ∨ B)</span> — еквіваленція імплікації та її розкладення."
+               "</p> <br><br><br>")
+            );
+
+        ui->welcomeLabel_3->setText(
+            tr("<h2 style='text-align: right;'>Гарячі клавіші</h2>"
+               "<p style='text-align: right; line-height: 0.7;'>"
+               "<span style='font-size: 20px; font-weight: bold;'>'>'</span> — Імплікація.</p>"
+               "<p style='text-align: right; line-height: 0.7;'>"
+               "<span style='font-size: 20px; font-weight: bold;'>'='</span> — Еквіваленція.</p>"
+               "<p style='text-align: right; line-height: 0.7;'>"
+               "<span style='font-size: 20px; font-weight: bold;'>Shift + '*'</span> — Кон'юнкція.</p>"
+               "<p style='text-align: right; line-height: 0.7;'>"
+               "<span style='font-size: 20px; font-weight: bold;'>Shift + '+'</span> — Диз'юнкція.</p>"
+               "<p style='text-align: right; line-height: 0.7;'>"
+               "<span style='font-size: 20px; font-weight: bold;'>Shift + '!'</span> — Заперечення.</p>"
+               "<br><br>")
+            );
+
+        int labelWidth = ui->welcomeLabel->width();
+        ui->horizontalSpacer_8->changeSize(labelWidth-(labelWidth-228), 0, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        ui->horizontalLayout->invalidate();
+        ui->horizontalLayout->update();
+
+        int currentTabIndex = ui->tabWidget->currentIndex();
+        if (currentTabIndex != -1) {
+            onTabChanged(currentTabIndex);
+        } else {
+            //qDebug() << "Жодна вкладка не вибрана";
+        }
+
+        if (fileManager->isFileDataLoaded()) {
+            changeWindowTitle(tr("| Відкрито: ") + fileManager->getFileName());
+        }
+
+    }
+    QMainWindow::changeEvent(event);
+}
 

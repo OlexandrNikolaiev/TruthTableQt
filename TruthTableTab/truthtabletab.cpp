@@ -30,7 +30,7 @@ Tab::~Tab()
 
 QString Tab::extractTopLevelOperator(const QString& header) {
     if (header.startsWith("¬")) {
-        return "заперечення";
+        return tr("заперечення");
     }
     // Якщо підвираз у дужках, наприклад "(A ∧ B)", витягуємо бінарну операцію
     else if (header.startsWith("(") && header.endsWith(")")) {
@@ -40,9 +40,11 @@ QString Tab::extractTopLevelOperator(const QString& header) {
             QChar ch = inner[i];
             if (ch == '(') level++;
             else if (ch == ')') level--;
-            else if (level == 0 && (ch == QChar(0x2227) || ch == QChar(0x2228) || ch == QChar(0x21D2) || ch == QChar(0x21D4))) {
-
-                return QString(operatorNames.value(ch));
+            else if (level == 0) {
+                if (ch == QChar(0x2227)) return tr("кон'юнкція");
+                if (ch == QChar(0x2228)) return tr("диз'юнкція");
+                if (ch == QChar(0x21D2)) return tr("імплікація");
+                if (ch == QChar(0x21D4)) return tr("еквіваленція");
             }
         }
     }
@@ -151,8 +153,7 @@ void Tab::clearRowHighlight(int row)
         if (auto item = ui->truthTable->item(row, j))
         {
 
-            item->setBackground(QBrush(QColor(23, 33, 43)));
-            item->setForeground(QBrush(QColor(87, 98, 109)));
+            item->setBackground(Qt::white);
         }
     }
 }
@@ -210,15 +211,15 @@ void Tab::on_truthTable_cellEntered(int row, int column) {
     if (column < varCount) {
         // змінні
         QString var = ui->truthTable->horizontalHeaderItem(column)->text();
-        emit statusMessageRequested("Змінна: " + var);
+        emit statusMessageRequested(tr("Змінна: ") + var);
     } else {
         // підвирази
         QString header = ui->truthTable->horizontalHeaderItem(column)->text();
         QString op = extractTopLevelOperator(header);
         if (!op.isEmpty()) {
-            emit statusMessageRequested("Операція: " + op);
+            emit statusMessageRequested(tr("Операція: ") + op);
         } else {
-            emit statusMessageRequested("Підвираз: " + header); // nikogda ne rabotaet
+            emit statusMessageRequested(tr("Підвираз: ") + header); // nikogda ne rabotaet
         }
 
     }

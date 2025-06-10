@@ -15,6 +15,9 @@ public:
 
     void saveCellHoverColor(const QColor& color);
     QString loadCellHoverColor();
+
+    void saveLanguage(QString language);
+    QString loadLanguage();
 };
 
 #endif // SETTINGSMANAGER_H

@@ -45,4 +45,14 @@ QString SettingsManager::loadCellHoverColor()
     return hexColor;
 }
 
+void SettingsManager::saveLanguage(QString language)
+{
+    saveValue("Language", "current", language);
+}
+
+QString SettingsManager::loadLanguage()
+{
+    return loadValue("Language", "current").toString();
+}
+
 
