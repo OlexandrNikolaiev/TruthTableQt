@@ -32,7 +32,7 @@ public:
 
 
 signals:
-    void sendExpressionFromFile(QString);
+    void sendExpressionFromFile(QString, bool);
     void sendNewTitle(QString);
     void changeActionStatus(bool);
     void clearAllTabs();

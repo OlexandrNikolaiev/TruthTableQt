@@ -9,10 +9,12 @@
 #include <QGraphicsDropShadowEffect>
 #include <QFileDialog>
 #include <QTranslator>
+
 #include "TruthTableTab/truthtabletab.h"
 #include "IniManager/SettingsManager/settingsmanager.h"
 #include "FileManager/filemanager.h"
 #include "ExcelExporter/excelexporter.h"
+#include "IniManager/HistoryManager/historymanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,6 +31,8 @@ public:
     ~MainWindow();
 
 private slots:
+    void onHistoryEntrySelected(const QString& expression);
+
     void on_auxiliaryButton_clicked();
     void onMenuActionTriggered(bool checked);
     void onLanguageActionTriggered(bool checked);
@@ -56,6 +60,7 @@ signals:
     void changeDataLoaded(bool);
 private:
     Ui::MainWindow *ui;
+    HistoryManager* historyManager;
 
     QTranslator* translator;
     bool isUkrainian;
@@ -81,7 +86,7 @@ private:
     QVector<QChar> extractVariables(const QString& expr) const;
     int findTabIndexByName(QTabWidget *tabWidget, const QString &tabName);
 
-    void build(QString expression);
+    void build(QString expression, bool addToHistory);
 
 
 };

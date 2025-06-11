@@ -13,6 +13,10 @@ MainWindow::MainWindow(QWidget *parent)
     translator = new QTranslator(this);
     settings = new SettingsManager("settings.ini");
 
+    historyManager = new HistoryManager(ui->menu_history, settings, this);
+    connect(historyManager, &HistoryManager::entrySelected, this, &MainWindow::onHistoryEntrySelected);
+    historyManager->loadHistory();
+
     this->setWindowTitle(tr("Конструктор таблиць істинності"));
 
     ui->inputLineEdit->setPlaceholderText(tr("Введіть логічний вираз..."));
@@ -91,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent)
         "}"
 
         "QMenu::item:disabled {"
-        "    color: rgba(255, 255, 255, 80);"
+        "    color: rgba(255, 255, 255, 95);"
         "}"
         );
 
@@ -219,11 +223,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->horizontalLayout->update();
 
     loadSettings();
+
+    //setWindowState(Qt::WindowMaximized);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::onHistoryEntrySelected(const QString &expression)
+{
+    ui->inputLineEdit->setText(expression);
+    on_buildButton_clicked();
 }
 
 void MainWindow::on_auxiliaryButton_clicked()
@@ -347,7 +359,7 @@ void MainWindow::onLanguageActionTriggered(bool checked)
 void MainWindow::on_buildButton_clicked() //переробити час виконання коли буде зроблений многопоток
 {
     QString expression = ui->inputLineEdit->text().trimmed();
-    build(expression);
+    build(expression, true);
     //emit sendExecutionTime(formattedTime);
 }
 
@@ -405,11 +417,14 @@ void MainWindow::loadSettings()
 {
     QByteArray geometry = settings->loadWindowGeometry(); // make support for different resolutions
     if (!geometry.isEmpty()) {
+        qDebug()<<"restoring "<<geometry;
         restoreGeometry(geometry);
     } else {
         resize(800, 600);
         move(100, 100);
     }
+
+
 
     bool showAuxButtons = settings->loadShowAuxButtons();
     ui->action_showAuxButtons->setChecked(showAuxButtons);
@@ -548,21 +563,25 @@ int MainWindow::findTabIndexByName(QTabWidget *tabWidget, const QString &tabName
     return -1;
 }
 
-void MainWindow::build(QString expression)
+void MainWindow::build(QString expression, bool addToHistory)
 {
     QDateTime startTime = QDateTime::currentDateTime();
     //qDebug()<<startTime;
 
     int findIndex = findTabIndexByName(ui->tabWidget, expression);
-    if (findIndex!=-1) {
-        ui->tabWidget->setCurrentIndex(findIndex);
-        return;
-    }
 
     QString error = validateExpression(expression);
     if (!error.isEmpty()){
         QMessageBox::warning(this, tr("Помилка"), error);
         return;
+    }
+    if (findIndex!=-1) {
+        ui->tabWidget->setCurrentIndex(findIndex);
+        return;
+    } else {
+        if (addToHistory) {
+            historyManager->addEntry(expression);
+        }
     }
 
     _tab = new Tab(nullptr, expression, currentCellHoverColor);
@@ -690,7 +709,7 @@ void MainWindow::closeOpenedFile()
     emit changeDataLoaded(false);
 
     ui->stackedWidget->setCurrentIndex(0);
-    ui->statusbar->clearMessage();
+    executionTimeLabel->clear();
     changeWindowTitle("");
     //changeSaveAction(false);
 

@@ -1,30 +1,56 @@
 #include "historymanager.h"
+#include <QDateTime>
+#include <QAction>
 
-HistoryManager::HistoryManager(const QString& fileName)
-    : IniManager(fileName)
+HistoryManager::HistoryManager(QMenu* menu, SettingsManager* settings, QObject* parent)
+    : QObject(parent), _menu(menu), _settings(settings)
 {
 }
 
-void HistoryManager::saveHistory(const QStringList& history)
+void HistoryManager::addEntry(const QString& expression)
 {
-    settings.beginGroup("History");
-    settings.remove(""); // Очищаємо стару історію
-    for (int i = 0; i < history.size(); ++i) {
-        settings.setValue(QString("expression%1").arg(i), history[i]);
+    QString timestamp = QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm");
+    QString entry = "[" + timestamp + "] " + expression;
+    _history.prepend(entry);
+    if (_history.size() > 20) {
+        _history.removeLast();
     }
-    settings.endGroup();
-    settings.sync();
+    saveHistory();
+    updateMenu();
 }
 
-QStringList HistoryManager::loadHistory()
+void HistoryManager::loadHistory()
 {
-    QStringList history;
-    settings.beginGroup("History");
-    int i = 0;
-    while (settings.contains(QString("expression%1").arg(i))) {
-        history.append(settings.value(QString("expression%1").arg(i)).toString());
-        ++i;
+    _history = _settings->loadValue("History", "entries").toStringList();
+    updateMenu();
+}
+
+void HistoryManager::saveHistory()
+{
+    _settings->saveValue("History", "entries", _history);
+}
+
+void HistoryManager::updateMenu()
+{
+    _menu->clear();
+    QAction* emptyAction;
+    if (_history.isEmpty()) {
+        emptyAction = new QAction(tr("Історія порожня"), _menu);
+        emptyAction->setEnabled(false);
+        _menu->addAction(emptyAction);
     }
-    settings.endGroup();
-    return history;
+    else {
+        for (const QString& entry : _history) {
+            QAction* action = _menu->addAction(entry);
+            connect(action, &QAction::triggered, this, [this, entry]() {
+                int idx = entry.indexOf(']');
+                if (idx != -1) {
+                    QString expression = entry.mid(idx + 2).trimmed();
+                    emit entrySelected(expression);
+                }
+            });
+        }
+    }
+
+
 }

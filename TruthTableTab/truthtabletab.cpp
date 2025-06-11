@@ -65,9 +65,6 @@ void Tab::setExecutionTime(QString time)
 
 void Tab::build(QString expression)
 {
-
-
-
     tableBuilder->setExpression(expression);
     if (!tableBuilder->build()) {
         QMessageBox::critical(this, "Помилка", "Не вдалося побудувати таблицю істинності.");

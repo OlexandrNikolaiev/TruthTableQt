@@ -1,15 +1,28 @@
 #ifndef HISTORYMANAGER_H
 #define HISTORYMANAGER_H
 
-#include "../inimanager.h"
-#include <QStringList>
+#include <QObject>
+#include <QMenu>
+#include "../SettingsManager/settingsmanager.h"
 
-class HistoryManager : public IniManager {
+class HistoryManager : public QObject
+{
+    Q_OBJECT
 public:
-    HistoryManager(const QString& fileName = "history.ini");
+    HistoryManager(QMenu* menu, SettingsManager* settings, QObject* parent = nullptr);
+    void addEntry(const QString& expression);
+    void loadHistory();
 
-    void saveHistory(const QStringList& history);
-    QStringList loadHistory();
+signals:
+    void entrySelected(const QString& expression);
+
+private:
+    void saveHistory();
+    void updateMenu();
+
+    QMenu* _menu;
+    SettingsManager* _settings;
+    QStringList _history;
 };
 
 #endif // HISTORYMANAGER_H

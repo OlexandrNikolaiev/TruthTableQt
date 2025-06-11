@@ -89,7 +89,7 @@ bool FileManager::load()
     while (!in.atEnd()) {
         const QString title = in.readLine();
         _lastSavedTabs << title;
-        emit sendExpressionFromFile(title);
+        emit sendExpressionFromFile(title, false);
         // QWidget* newTab = new QWidget();
         // m_tabWidget->addTab(newTab, title);
         qDebug()<<title;
