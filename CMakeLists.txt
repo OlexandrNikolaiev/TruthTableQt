@@ -21,7 +21,7 @@ qt_add_executable(cursova
     TruthTableBuilder/truthtablebuilder.h TruthTableBuilder/truthtablebuilder.cpp
     FileManager/filemanager.h FileManager/filemanager.cpp
     ExcelExporter/excelexporter.h ExcelExporter/excelexporter.cpp
-    ThemeManager/thememanager.h ThemeManager/thememanager.cpp
+
 )
 
 # Добавление перевода

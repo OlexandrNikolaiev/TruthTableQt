@@ -54,7 +54,8 @@ QString TruthTableBuilder::infixToPostfix(const QString& infix) {
     QString output;
     int n = _varList.size();
 
-    for (QChar token : infix) {
+    for (int i = 0; i < infix.size(); ++i) {
+        QChar token = infix[i];
         if (token.isSpace()) continue;
 
         if (token.isLetterOrNumber()) {
@@ -94,6 +95,9 @@ QString TruthTableBuilder::infixToPostfix(const QString& infix) {
                 }
             }
             if (!ops.isEmpty()) ops.pop();
+        }
+        else if (token == '!') {
+            ops.push(token); //fixed
         }
         else {
             while (!ops.isEmpty() && precedence(ops.top()) >= precedence(token)) {

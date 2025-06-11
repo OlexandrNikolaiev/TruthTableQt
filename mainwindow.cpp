@@ -225,6 +225,10 @@ MainWindow::MainWindow(QWidget *parent)
     loadSettings();
 
     //setWindowState(Qt::WindowMaximized);
+
+    //resources not working
+    ui->action_3->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/builder.png"));
+    ui->action_Excel->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/excel.png"));
 }
 
 MainWindow::~MainWindow()
@@ -266,6 +270,7 @@ void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
         if (checked) {
             qDebug()<<"Aux Checked";
             ui->frame_5->show();
+            //this->showMaximized();
         } else {
             qDebug()<<"Aux not Checked";
             ui->frame_5->hide();
@@ -462,10 +467,9 @@ void MainWindow::loadSettings()
     }
 }
 
-QString MainWindow::validateExpression(const QString &expr) const
-{
+QString MainWindow::validateExpression(const QString &expr) const {
     if (expr.isEmpty()) {
-        return QString(tr("Вираз не може бути порожнім."));
+        return tr("Вираз не може бути порожнім.");
     }
 
     QString allowedOperators = "!*+>=∨¬∧⇒⇔";
@@ -476,10 +480,10 @@ QString MainWindow::validateExpression(const QString &expr) const
 
     for (QChar ch : expr) {
         if (!allowedChars.contains(ch) && !ch.isLetter()) {
-            return QString("Вираз містить недопустимі символи: '%1'.").arg(ch);
+            return tr("Вираз містить недопустимі символи: '%1'.").arg(ch);
         }
         if (ch.unicode() >= 0x0400 && ch.unicode() <= 0x04FF) {
-            return QString("Вираз містить кириличні символи: '%1'.").arg(ch);
+            return tr("Вираз містить кириличні символи: '%1'.").arg(ch);
         }
     }
 
@@ -488,56 +492,67 @@ QString MainWindow::validateExpression(const QString &expr) const
         if (ch == '(') balance++;
         else if (ch == ')') balance--;
         if (balance < 0) {
-            return QString("Незбалансовані дужки: закриваюча дужка перед відкриваючою.");
+            return tr("Незбалансовані дужки: закриваюча дужка перед відкриваючою.");
         }
     }
     if (balance != 0) {
-        return QString("Незбалансовані дужки: не вистачає закриваючих або відкриваючих дужок.");
+        return tr("Незбалансовані дужки: не вистачає закриваючих або відкриваючих дужок.");
     }
 
     for (int i = 0; i < expr.size() - 1; ++i) {
         if (expr[i] == '(' && expr[i + 1] == ')') {
-            return QString("Знайдено порожні дужки '()' у виразі.");
+            return tr("Знайдено порожні дужки '()' у виразі.");
         }
     }
+
+    QString binaryOperators = "*+>=∨∧⇒⇔";
+    QString unaryOperators = "!¬";
+
+    QStack<int> parenStack;  // Стек для відстеження відкриваючих дужок
+    int state = 0;  // 0: очікуємо операнд або унарний оператор, 1: очікуємо бінарний оператор
 
     for (int i = 0; i < expr.size(); ++i) {
-        QString binaryOperators = "*+>=";
         QChar ch = expr[i];
-        if (allowedOperators.contains(ch)) {
-            if (i == expr.size() - 1) {
-                return QString("Вираз не може закінчуватися оператором '%1'.").arg(ch);
+        if (ch == '(') {
+            parenStack.push(i);
+            if (state == 1) {
+                return tr("Несподівана відкриваюча дужка.");
             }
-            for (int i = 0; i < expr.size() - 1; ++i) {
-                QChar current = expr[i];
-                QChar next = expr[i + 1];
-
-                // Якщо поточний символ — бінарний оператор
-                if (binaryOperators.contains(current)) {
-                    // І наступний символ також бінарний оператор
-                    if (binaryOperators.contains(next)) {
-                        return QString("Помилка: два бінарних оператори поспіль: '%1' і '%2'.").arg(current).arg(next);
-                    }
-                }
+            state = 0;  // Всередині дужок очікуємо операнд
+        } else if (ch == ')') {
+            if (parenStack.isEmpty()) {
+                return tr("Незбалансовані дужки.");
             }
+            parenStack.pop();
+            if (state == 0) {
+                return tr("Підвираз закінчується несподівано.");
+            }
+            state = 1;  // Після дужок очікуємо бінарний оператор або кінець
+        } else if (unaryOperators.contains(ch)) {
+            if (state == 1) {
+                return tr("Несподіваний унарний оператор після операнда.");
+            }
+            // Унарний оператор не змінює стан
+        } else if (ch.isLetter()) {
+            if (state == 1) {
+                return tr("Два операнди поспіль.");
+            }
+            state = 1;  // Після операнда очікуємо бінарний оператор
+        } else if (binaryOperators.contains(ch)) {
+            if (state == 0) {
+                return tr("Несподіваний бінарний оператор.");
+            }
+            state = 0;  // Після бінарного оператора очікуємо операнд
+        } else if (!ch.isSpace()) {
+            return tr("Недопустимий символ: '%1'.").arg(ch);
         }
     }
 
-    QVector<QChar> vars = extractVariables(expr);
-    if (vars.isEmpty()) {
-        return QString("Вираз не містить змінних.");
+    if (state == 0) {
+        return tr("Вираз закінчується несподівано.");
     }
 
-    for (int i = 0; i < expr.size() - 1; ++i) {
-        if (expr[i] == '!') {
-            QChar next = expr[i + 1];
-            if (!next.isLetterOrNumber() && next != '(') {
-                return QString("Після унарного оператора '!' має бути змінна або відкриваюча дужка.");
-            }
-        }
-    }
-
-    return QString("");
+    return "";
 }
 
 QVector<QChar> MainWindow::extractVariables(const QString &expr) const // code duplication, forced measure
