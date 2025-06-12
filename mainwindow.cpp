@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     translator = new QTranslator(this);
     settings = new SettingsManager("settings.ini");
 
+    connect(ui->tabWidget, &QTabWidget::tabBarDoubleClicked, this, &MainWindow::onTabDoubleClicked);
+
     historyManager = new HistoryManager(ui->menu_history, settings, this);
     connect(historyManager, &HistoryManager::entrySelected, this, &MainWindow::onHistoryEntrySelected);
     historyManager->loadHistory();
@@ -234,6 +236,24 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::onTabDoubleClicked(int index)
+{
+    qDebug() << "Double‑clicked tab index:" << index;
+    QWidget *page = ui->tabWidget->widget(index);
+    if (!page) return;
+
+    // 1) Приводим к Tab
+    Tab *tab = qobject_cast<Tab*>(page);
+    if (!tab) {
+        qDebug() << "Not a Tab page";
+        return;
+    }
+    qDebug() << "Tab page found";
+    tab->restretchTable();
+
+    //table->restr
 }
 
 void MainWindow::onHistoryEntrySelected(const QString &expression)

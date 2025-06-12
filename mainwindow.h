@@ -27,10 +27,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    //public for testing
+    QString validateExpression(const QString& expr) const;
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
+    void onTabDoubleClicked(int index);
+
     void onHistoryEntrySelected(const QString& expression);
 
     void on_auxiliaryButton_clicked();
@@ -82,7 +87,6 @@ private:
 
     void loadSettings();
 
-    QString validateExpression(const QString& expr) const;
     QVector<QChar> extractVariables(const QString& expr) const;
     int findTabIndexByName(QTabWidget *tabWidget, const QString &tabName);
 

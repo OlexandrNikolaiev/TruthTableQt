@@ -309,7 +309,7 @@
     <message>
         <location filename="mainwindow.cpp" line="463"/>
         <source>Вираз не може бути порожнім.</source>
-        <translation>The expression cannot be empty.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="631"/>

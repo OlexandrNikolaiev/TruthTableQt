@@ -76,7 +76,7 @@ void Tab::build(QString expression)
 
     int subexprCount = tableBuilder->subexprCount();
     int rows = tableBuilder->rowCount();
-    int cols = varCount + subexprCount;
+    cols = varCount + subexprCount;
 
     ui->truthTable->show();
 
@@ -112,23 +112,43 @@ void Tab::build(QString expression)
         }
     }
 
-    auto *hdr = ui->truthTable->horizontalHeader();
-
-    for (int j = 0; j < varCount; ++j) {
-        hdr->setSectionResizeMode(j, QHeaderView::ResizeToContents);
-        ui->truthTable->horizontalHeaderItem(j)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    }
-
-    for (int j = varCount; j < cols; ++j) {
-        hdr->setSectionResizeMode(j, QHeaderView::Stretch);
-        ui->truthTable->horizontalHeaderItem(j)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    }
-
-    ui->truthTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    //qDebug()<<"built";
-
+    restretchTable();
 
     determineExpressionType();
+}
+
+void Tab::restretchTable()
+{
+    if (!isStretched) {
+        auto *hdr = ui->truthTable->horizontalHeader();
+        for (int j = 0; j < varCount; ++j) {
+            hdr->setSectionResizeMode(j, QHeaderView::ResizeToContents);
+            ui->truthTable->horizontalHeaderItem(j)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        }
+        for (int j = varCount; j < cols; ++j) {
+            hdr->setSectionResizeMode(j, QHeaderView::ResizeToContents);
+            ui->truthTable->horizontalHeaderItem(j)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        }
+        ui->truthTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+        ui->truthTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+        isStretched = true;
+    }  else {
+        auto *hdr = ui->truthTable->horizontalHeader();
+
+        for (int j = 0; j < varCount; ++j) {
+            hdr->setSectionResizeMode(j, QHeaderView::ResizeToContents);
+            ui->truthTable->horizontalHeaderItem(j)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        }
+
+        for (int j = varCount; j < cols; ++j) {
+            hdr->setSectionResizeMode(j, QHeaderView::Stretch);
+            ui->truthTable->horizontalHeaderItem(j)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        }
+
+        ui->truthTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+        isStretched = false;
+    }
 }
 
 void Tab::changeCellHoverColor(QColor color)
@@ -154,6 +174,8 @@ void Tab::clearRowHighlight(int row)
         }
     }
 }
+
+
 
 void Tab::determineExpressionType()
 {
@@ -190,6 +212,8 @@ void Tab::determineExpressionType()
         emit sendExpressionTypeSignal(expressionType);
     }
 }
+
+
 
 
 void Tab::on_truthTable_cellEntered(int row, int column) {

@@ -23,6 +23,9 @@ public:
     bool eventFilter(QObject *obj, QEvent *event);
     void setExecutionTime(QString time);
 
+    void restretchTable();
+
+
 public slots:
     void build(QString expression);
     void changeCellHoverColor(QColor color);
@@ -38,9 +41,12 @@ signals:
 
 
 private:
+
+
     Ui::Tab *ui;
     TruthTableBuilder* tableBuilder;
 
+    int cols;
     int varCount;
     QVector<QVector<int>> childDeps;
 
@@ -54,7 +60,7 @@ private:
 
     void determineExpressionType();
 
-
+    bool isStretched = true;
 
     QString executionTime;
 
