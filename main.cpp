@@ -2,8 +2,41 @@
 #include <QFontDatabase>
 #include <QLocale>
 #include <QTranslator>
+#include <windows.h>
 
 #include "mainwindow.h"
+
+QColor getWindowsBackgroundColor() {
+    HKEY hKey;
+    const char* subKey = R"(Control Panel\Colors)";
+    const char* valueName = "Background";
+    char value[255];
+    DWORD valueLen = sizeof(value);
+    DWORD type = REG_SZ;
+
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, subKey, 0, KEY_READ, &hKey) != ERROR_SUCCESS) {
+        qWarning() << "Cannot open registry key.";
+        return QColor(Qt::black); // fallback
+    }
+
+    if (RegQueryValueExA(hKey, valueName, nullptr, &type, (LPBYTE)value, &valueLen) != ERROR_SUCCESS) {
+        qWarning() << "Cannot read registry value.";
+        RegCloseKey(hKey);
+        return QColor(Qt::black); // fallback
+    }
+
+    RegCloseKey(hKey);
+
+    int r, g, b;
+    if (sscanf_s(value, "%d %d %d", &r, &g, &b) != 3) {
+        qWarning() << "Failed to parse background color.";
+        return QColor(Qt::black); // fallback
+    }
+
+    QColor backgroundColor(r, g, b);
+    qDebug() << "Windows background color:" << backgroundColor;
+    return backgroundColor;
+}
 
 void registerFileAssociation()
 {
@@ -38,8 +71,17 @@ int main(int argc, char *argv[])
 
     MainWindow w;
 
+    QStringList args = QCoreApplication::arguments();
+    if (args.size() > 1) {
+        QString filePath = args.at(1);
+        w.loadFile(filePath);
+    }
 
     w.show();
+
+    // QColor rgb = getWindowsBackgroundColor();
+    // w.applyBackgroundColorToMenuBar(rgb);
+
 
     return a.exec();
 }

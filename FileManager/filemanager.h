@@ -16,6 +16,9 @@ class FileManager : public QObject {
 public:
     explicit FileManager(QTabWidget* tabWidget, QObject* parent = nullptr);
 
+    // Open with double clicking on .builder file
+    bool loadFromPath(const QString& path);
+
     // Open a "Save As" dialog to choose a .builder file and save
     bool saveWithDialog();
     // Open an "Open" dialog to choose a .builder file and load

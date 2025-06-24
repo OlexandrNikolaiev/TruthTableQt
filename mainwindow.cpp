@@ -4,6 +4,7 @@
 #include <QTableWidgetItem>
 #include <qactiongroup.h>
 #include <QPixmap>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -59,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->disjunctionButton,   &QPushButton::clicked, this, &MainWindow::on_auxiliaryButton_clicked);
     connect(ui->implicationButton,   &QPushButton::clicked, this, &MainWindow::on_auxiliaryButton_clicked);
     connect(ui->biconditionalButton, &QPushButton::clicked, this, &MainWindow::on_auxiliaryButton_clicked);
+
 
     ui->menubar->setStyleSheet(
         "QMenuBar {"
@@ -231,6 +233,11 @@ MainWindow::MainWindow(QWidget *parent)
     //resources not working
     ui->action_3->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/builder.png"));
     ui->action_Excel->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/excel.png"));
+
+    //workaround, also at onMenuActionTriggered
+    QTimer::singleShot(1, this, [this]() {
+        this->showMaximized();
+    });
 }
 
 MainWindow::~MainWindow()
@@ -290,6 +297,9 @@ void MainWindow::onMenuActionTriggered(bool checked) // peredelat' etot pizdets
         if (checked) {
             qDebug()<<"Aux Checked";
             ui->frame_5->show();
+            QTimer::singleShot(1, this, [this]() {
+                this->showMaximized();
+            });
             //this->showMaximized();
         } else {
             qDebug()<<"Aux not Checked";
@@ -364,11 +374,15 @@ void MainWindow::onLanguageActionTriggered(bool checked)
             isUkrainian = false;
             settings->saveLanguage("English");
             qDebug()<<"saving english";
+
         } else {
             qDebug() << "Failed to load translation file.";
         }
         QEvent languageChangeEvent(QEvent::LanguageChange);
         QApplication::sendEvent(this, &languageChangeEvent);
+        QTimer::singleShot(1, this, [this]() {
+            this->showMaximized();
+        });
     }
 
     if (senderAction == ui->actionUkrainian && !isUkrainian) {
@@ -378,7 +392,11 @@ void MainWindow::onLanguageActionTriggered(bool checked)
         qDebug()<<"saving ukrainian";
         QEvent languageChangeEvent(QEvent::LanguageChange);
         QApplication::sendEvent(this, &languageChangeEvent);
+        QTimer::singleShot(1, this, [this]() {
+            this->showMaximized();
+        });
     }
+
 }
 
 void MainWindow::on_buildButton_clicked() //переробити час виконання коли буде зроблений многопоток
@@ -440,14 +458,14 @@ void MainWindow::onTabChanged(int index)
 
 void MainWindow::loadSettings()
 {
-    QByteArray geometry = settings->loadWindowGeometry(); // make support for different resolutions
-    if (!geometry.isEmpty()) {
-        qDebug()<<"restoring "<<geometry;
-        restoreGeometry(geometry);
-    } else {
-        resize(800, 600);
-        move(100, 100);
-    }
+    // QByteArray geometry = settings->loadWindowGeometry(); // make support for different resolutions
+    // if (!geometry.isEmpty()) {
+    //     qDebug()<<"restoring "<<geometry;
+    //     restoreGeometry(geometry);
+    // } else {
+    //     resize(800, 600);
+    //     move(100, 100);
+    // }
 
 
 
@@ -575,6 +593,13 @@ QString MainWindow::validateExpression(const QString &expr) const {
     return "";
 }
 
+void MainWindow::loadFile(const QString &path)
+{
+    if (!fileManager->loadFromPath(path)) {
+        QMessageBox::warning(this, tr("Помилка"), tr("Не вдалося завантажити файл: %1").arg(path));
+    }
+}
+
 QVector<QChar> MainWindow::extractVariables(const QString &expr) const // code duplication, forced measure
 {
     QVector<QChar> varList;
@@ -654,6 +679,65 @@ void MainWindow::build(QString expression, bool addToHistory)
     ui->action_Excel->setEnabled(true);
     //qDebug()<<formattedTime;
 }
+
+// void MainWindow::applyBackgroundColorToMenuBar(const QColor& bgColor) {
+//     QString baseRGB = QString("rgb(%1,%2,%3)")
+//                           .arg(bgColor.red())
+//                           .arg(bgColor.green())
+//                           .arg(bgColor.blue());
+
+//     bool isLight = (bgColor.red()*0.299 + bgColor.green()*0.587 + bgColor.blue()*0.114) > 186;
+
+//     QString textColor = isLight ? "black" : "white";
+
+//     QColor selected = isLight ? bgColor.darker(110) : bgColor.lighter(110);
+//     QString selectedColor = QString("rgb(%1,%2,%3)")
+//                                 .arg(selected.red())
+//                                 .arg(selected.green())
+//                                 .arg(selected.blue());
+
+//     QColor border = isLight ? QColor(200,200,200) : QColor(60,70,85);
+//     QString borderColor = QString("rgb(%1,%2,%3)")
+//                               .arg(border.red())
+//                               .arg(border.green())
+//                               .arg(border.blue());
+
+//     QString style = QString(
+//                         "QMenuBar {"
+//                         "    background-color: %1;"
+//                         "    color: %2;"
+//                         "}"
+//                         "QMenuBar::item {"
+//                         "    background-color: %1;"
+//                         "    color: %2;"
+//                         "    padding: 4px 10px;"
+//                         "}"
+//                         "QMenuBar::item:selected {"
+//                         "    background-color: %3;"
+//                         "}"
+//                         "QMenuBar::item:disabled {"
+//                         "    color: rgba(0, 0, 0, 80);"
+//                         "}"
+//                         "QMenu {"
+//                         "    background-color: %1;"
+//                         "    color: %2;"
+//                         "    border: 1px solid %4;"
+//                         "}"
+//                         "QMenu::item {"
+//                         "    background-color: transparent;"
+//                         "    padding: 6px 20px;"
+//                         "    margin: 2px 0;"
+//                         "}"
+//                         "QMenu::item:selected {"
+//                         "    background-color: %3;"
+//                         "}"
+//                         "QMenu::item:disabled {"
+//                         "    color: rgba(0, 0, 0, 95);"
+//                         "}"
+//                         ).arg(baseRGB, textColor, selectedColor, borderColor);
+
+//     ui->menubar->setStyleSheet(style);
+// }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {

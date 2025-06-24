@@ -327,6 +327,59 @@ QPushButton:hover
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="3">
+              <widget class="QPushButton" name="implicationButton">
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Open Sans SemiBold</family>
+                 <pointsize>22</pointsize>
+                 <bold>false</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string>Імплікація</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+   background-color: rgb(240,240,240);
+    border-color: rgba(0, 0, 0, 0.19);
+color: rgb(26,26,26);
+ border-radius: 9px;
+    border: 1px solid #DFDFDF;
+
+}
+
+QPushButton:hover {
+    background-color: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.19);
+ border-radius: 9px;
+}
+
+QPushButton:pressed {
+    background-color: lightgray;
+}
+
+</string>
+               </property>
+               <property name="text">
+                <string>⇒</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="0">
               <widget class="QPushButton" name="negationButton">
                <property name="minimumSize">
@@ -377,112 +430,6 @@ QPushButton:pressed {
                </property>
                <property name="text">
                 <string>¬</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QPushButton" name="disjunctionButton">
-               <property name="minimumSize">
-                <size>
-                 <width>80</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <family>Open Sans SemiBold</family>
-                 <pointsize>20</pointsize>
-                 <bold>true</bold>
-                 <underline>false</underline>
-                 <strikeout>false</strikeout>
-                </font>
-               </property>
-               <property name="toolTip">
-                <string>Диз'юнкція</string>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QPushButton {
-   background-color: rgb(240,240,240);
-    border-color: rgba(0, 0, 0, 0.19);
-color: rgb(26,26,26);
- border-radius: 9px;
-    border: 1px solid #DFDFDF;
-
-}
-
-QPushButton:hover {
-    background-color: #FFFFFF;
-    border-color: rgba(0, 0, 0, 0.19);
- border-radius: 9px;
-}
-
-QPushButton:pressed {
-    background-color: lightgray;
-}
-
-</string>
-               </property>
-               <property name="text">
-                <string>∨</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QPushButton" name="conjunctionButton">
-               <property name="minimumSize">
-                <size>
-                 <width>80</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <family>Open Sans SemiBold</family>
-                 <pointsize>20</pointsize>
-                 <bold>true</bold>
-                 <underline>false</underline>
-                 <strikeout>false</strikeout>
-                </font>
-               </property>
-               <property name="toolTip">
-                <string>Кон'юнкція</string>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QPushButton {
-   background-color: rgb(240,240,240);
-    border-color: rgba(0, 0, 0, 0.19);
-color: rgb(26,26,26);
- border-radius: 9px;
-    border: 1px solid #DFDFDF;
-
-}
-
-QPushButton:hover {
-    background-color: #FFFFFF;
-    border-color: rgba(0, 0, 0, 0.19);
- border-radius: 9px;
-}
-
-QPushButton:pressed {
-    background-color: lightgray;
-}
-
-</string>
-               </property>
-               <property name="text">
-                <string>∧</string>
                </property>
               </widget>
              </item>
@@ -551,8 +498,8 @@ QPushButton:pressed {
                </property>
               </widget>
              </item>
-             <item row="0" column="3">
-              <widget class="QPushButton" name="implicationButton">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="conjunctionButton">
                <property name="minimumSize">
                 <size>
                  <width>80</width>
@@ -568,14 +515,14 @@ QPushButton:pressed {
                <property name="font">
                 <font>
                  <family>Open Sans SemiBold</family>
-                 <pointsize>22</pointsize>
-                 <bold>false</bold>
+                 <pointsize>20</pointsize>
+                 <bold>true</bold>
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
                </property>
                <property name="toolTip">
-                <string>Імплікація</string>
+                <string>Кон'юнкція</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -600,7 +547,60 @@ QPushButton:pressed {
 </string>
                </property>
                <property name="text">
-                <string>⇒</string>
+                <string>∧</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="disjunctionButton">
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Open Sans SemiBold</family>
+                 <pointsize>20</pointsize>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string>Диз'юнкція</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+   background-color: rgb(240,240,240);
+    border-color: rgba(0, 0, 0, 0.19);
+color: rgb(26,26,26);
+ border-radius: 9px;
+    border: 1px solid #DFDFDF;
+
+}
+
+QPushButton:hover {
+    background-color: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.19);
+ border-radius: 9px;
+}
+
+QPushButton:pressed {
+    background-color: lightgray;
+}
+
+</string>
+               </property>
+               <property name="text">
+                <string>∨</string>
                </property>
               </widget>
              </item>

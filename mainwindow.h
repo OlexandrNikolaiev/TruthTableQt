@@ -29,6 +29,11 @@ class MainWindow : public QMainWindow
 public:
     //public for testing
     QString validateExpression(const QString& expr) const;
+    //void applyBackgroundColorToMenuBar(const QColor& bgColor);
+
+
+    // Open with double clicking on .builder file
+    void loadFile(const QString& path);
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -60,6 +65,7 @@ private slots:
     void closeOpenedFile();
 
     void exportToExcel();
+
 signals:
     void changeCellHoverColorSignal(QColor);
     void changeDataLoaded(bool);
@@ -92,6 +98,9 @@ private:
 
     void build(QString expression, bool addToHistory);
 
+    QString generateMenuBarStyle(QColor bgColor);
+
+    //void setMenuBarStylesheet();
 
 };
 

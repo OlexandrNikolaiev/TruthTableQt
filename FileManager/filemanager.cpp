@@ -10,6 +10,13 @@ FileManager::FileManager(QTabWidget* tabWidget, QObject* parent)
 {
 }
 
+// Open with double clicking on .builder file
+bool FileManager::loadFromPath(const QString &path)
+{
+    currentFilePath = path;
+    return load();
+}
+
 bool FileManager::saveWithDialog()
 {
     QWidget* parent = m_tabWidget->parentWidget();
@@ -64,6 +71,7 @@ bool FileManager::save()
     qDebug()<<_lastSavedTabs;
 
     file.close();
+    load();
     return true;
 }
 
